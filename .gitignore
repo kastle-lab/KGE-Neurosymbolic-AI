@@ -1,0 +1,9 @@
+__pycache__/
+data/
+junk_drawer/
+KGs/
+pca_cache.joblib
+manim_3d_data.npz
+*.slurm
+*.sif
+*.def
