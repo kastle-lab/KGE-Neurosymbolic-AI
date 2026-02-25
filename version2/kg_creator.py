@@ -44,7 +44,7 @@ def create_kg(n_vertices, window_depth, experiment_folder, decimal_precision, hi
         
 
     # create people with names twice the amount of ages
-    names = [f"person{i}" for i in (range(n_vertices * 2))]
+    names = [f"person{i}" for i in (range(5000))]
     names_with_assigned_ages = {}
     
     # assign random ages to each name
@@ -96,11 +96,12 @@ def build_kg(root: Window, norm_pairs: List[Tuple[str, float]], experiment_folde
         sorted_pairs = sorted(norm_pairs, key=lambda x: x[1])
         print(f"[DEBUG] First 10 sorted pairs: {sorted_pairs[:10]}")
 
+        # --------- Write hasAge edges ---------
         for i, (e1, value) in enumerate(sorted_pairs):
             
             for person, age in names_with_assigned_ages.items():
                 if age == value:
-                    f.write(f"{person}\thasAge\t{age}\n")
+                    f.write(f"{person}\thasAge\t{e1}\n")
 
             
             for e2, value in sorted_pairs[i+1:]:

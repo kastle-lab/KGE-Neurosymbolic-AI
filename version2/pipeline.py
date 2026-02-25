@@ -6,7 +6,7 @@ from visualize import visualize_pca
 
 n_vertices = 100
 window_depth = 4
-experiment_folder = "100v_200p"
+experiment_folder = "100v_5000p"
 decimal_precision=0
 high=100
 low=0
