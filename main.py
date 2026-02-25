@@ -164,7 +164,7 @@ def compute_reductions(entity_emb, seed=42):
     ).fit_transform(entity_emb)
 
     reduced_PCA = PCA(
-        n_components=2,
+        n_components=3,
         random_state=seed,
     ).fit_transform(entity_emb)
 

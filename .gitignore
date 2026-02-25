@@ -7,3 +7,8 @@ manim_3d_data.npz
 *.slurm
 *.sif
 *.def
+*.sh
+*.joblib
+*.csv
+*.tsv
+*.val
