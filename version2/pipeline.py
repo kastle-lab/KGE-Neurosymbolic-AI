@@ -66,9 +66,7 @@ def run_full_experiment(settings):
         }
     )
     
-settings = {
-    "n_people": 100,
-    "n_vertices": 1000,
+base_settings = {
     "window_depth": 4,
     "decimal_precision": 0,
     "high": 100,
@@ -79,4 +77,18 @@ settings = {
     "dim": 300
 }
 
-run_full_experiment(settings)
+experiments = [
+    {"n_vertices": 100,  "n_people": 5000},
+    {"n_vertices": 100,  "n_people": 100},
+    {"n_vertices": 100,  "n_people": 10},
+    {"n_vertices": 1000, "n_people": 5000},
+    {"n_vertices": 1000, "n_people": 500},
+]
+
+for exp in experiments:
+    settings = base_settings.copy()
+    settings.update(exp)
+
+    print(f"\nRunning: {settings['n_vertices']} ages, {settings['n_people']} people")
+
+    run_full_experiment(settings)
