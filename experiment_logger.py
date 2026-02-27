@@ -14,10 +14,10 @@ def write_experiment_markdown(
 ):
     """
     Writes experiment_config.md inside:
-    version2/<experiment_folder>/
+    /<experiment_folder>/
     """
 
-    exp_dir = os.path.join(BASE_DIR, "version2", experiment_folder)
+    exp_dir = os.path.join(BASE_DIR, experiment_folder)
     os.makedirs(exp_dir, exist_ok=True)
 
     md_path = os.path.join(exp_dir, "experiment_config.md")

@@ -46,11 +46,11 @@ def run_pca_for_experiment(
     overwrite=True,
 ):
     """
-    Load embeddings CSV from version2/experiment_folder,
+    Load embeddings CSV from /experiment_folder,
     compute PCA, and save PCA coords + model.
     """
 
-    exp_dir = os.path.join(BASE_DIR, "version2", experiment_folder)
+    exp_dir = os.path.join(BASE_DIR, experiment_folder)
 
     embeddings_csv = os.path.join(
         exp_dir,

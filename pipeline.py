@@ -25,8 +25,9 @@ def run_full_experiment(settings):
     seed = settings["seed"]
     epochs = settings["epochs"]
     dim = settings["dim"]
+    custom_name_addon = settings["custom_name_addon"]
 
-    experiment_folder = f"{n_vertices}ages_{n_people}people"
+    experiment_folder = f"{n_vertices}ages_{n_people}people{custom_name_addon}"
 
     # create KG
     print("Creating knowledge graph...")
@@ -66,16 +67,17 @@ def run_full_experiment(settings):
         }
     )
     
-base_settings = {
-    "window_depth": 4,
+base_settings_depth8 = {
+    "window_depth": 8,
     "decimal_precision": 0,
     "high": 100,
     "low": 0,
-    "model": "mure",
     "seed": 42,
     "epochs": 100,
     "dim": 300
 }
+
+models = ["TransE", "LiteralE", "DistMultE"]
 
 experiments = [
     {"n_vertices": 100,  "n_people": 5000},
@@ -85,10 +87,15 @@ experiments = [
     {"n_vertices": 1000, "n_people": 500},
 ]
 
-for exp in experiments:
-    settings = base_settings.copy()
-    settings.update(exp)
+for model in models:
+    for exp in experiments:
 
-    print(f"\nRunning: {settings['n_vertices']} ages, {settings['n_people']} people")
+        settings = base_settings_depth8.copy()
+        settings.update(exp)
 
-    run_full_experiment(settings)
+        settings["model"] = model
+        settings["custom_name_addon"] = f"_depth_8_{model}"
+
+        print(f"\nRunning: {settings['n_vertices']} ages, {settings['n_people']} people | depth 8 | {model}")
+
+        run_full_experiment(settings)

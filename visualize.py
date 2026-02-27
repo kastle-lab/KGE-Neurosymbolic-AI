@@ -69,10 +69,10 @@ def visualize_pca(
         - no person + no window nodes
 
     Saves into:
-        version2/<experiment_folder>/plots/
+        /<experiment_folder>/plots/
     """
 
-    exp_dir = os.path.join(BASE_DIR, "version2", experiment_folder)
+    exp_dir = os.path.join(BASE_DIR, experiment_folder)
 
     # Default output dir inside experiment folder
     if outdir is None:
@@ -89,7 +89,7 @@ def visualize_pca(
         print(f"[VIS] Expected PCA cache not found:")
         print(f"       {pca_cache}")
         print(f"[VIS] Available experiment folders:")
-        print(os.listdir(os.path.join(BASE_DIR, "version2")))
+        print(os.listdir(os.path.join(BASE_DIR)))
         raise FileNotFoundError(pca_cache)
 
     print("[VIS] Loading PCA cache...")

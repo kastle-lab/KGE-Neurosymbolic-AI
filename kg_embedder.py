@@ -167,7 +167,7 @@ def create_embeddings(
     # -----------------------------------
     # 1. Load KG + vals
     # -----------------------------------
-    kg_base = os.path.join(BASE_DIR, "version2", experiment_folder, "kg")
+    kg_base = os.path.join(BASE_DIR, experiment_folder, "kg")
 
     print("[STEP 1] Loading KG...")
     knowledge_graph, init_vals = load_KG(kg_base)
@@ -209,7 +209,7 @@ def create_embeddings(
     # SAVE EMBEDDINGS INTO EXPERIMENT DIR
     # -----------------------------------
     # path stuff
-    exp_dir = os.path.join(BASE_DIR, "version2", experiment_folder)
+    exp_dir = os.path.join(BASE_DIR, experiment_folder)
     os.makedirs(exp_dir, exist_ok=True)
     save_path = os.path.join(exp_dir, "embeddings_and_labels.csv")
 

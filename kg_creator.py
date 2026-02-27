@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = os.environ.get("SLURM_SUBMIT_DIR", os.path.dirname(os.path.abspath(__file__)))
 
 #SCRATCH = os.environ.get("SCRATCH")
-KG_DIR = os.path.join(BASE_DIR, "version2")
+KG_DIR = os.path.join(BASE_DIR)
 os.makedirs(KG_DIR, exist_ok=True)
     
 class Window:
