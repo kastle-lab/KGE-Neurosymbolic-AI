@@ -12,4 +12,3 @@ manim_3d_data.npz
 *.csv
 *.tsv
 *.val
-plots/
