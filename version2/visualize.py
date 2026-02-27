@@ -1,55 +1,98 @@
 import os
 import joblib
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.colors import LinearSegmentedColormap, Normalize
 
 BASE_DIR = os.environ.get(
     "SLURM_SUBMIT_DIR",
     os.path.dirname(os.path.abspath(__file__))
 )
 
-def visualize_pca(experiment_folder, outdir="plots"):
+def _safe_mkdir(p):
+    if p:
+        os.makedirs(p, exist_ok=True)
+
+def _annotate_points_2d(ax, x, y, labels, idx, max_labels=150, fontsize=7):
+    """
+    Annotate a subset of points to avoid unreadable clutter.
+    - If len(idx) <= max_labels: annotate all in idx
+    - Else: annotate evenly-spaced subset of idx of size max_labels
+    """
+    if idx.size == 0:
+        return
+
+    if idx.size > max_labels:
+        pick = np.linspace(0, idx.size - 1, max_labels).astype(int)
+        idx = idx[pick]
+
+    for i in idx:
+        ax.text(
+            float(x[i]), float(y[i]),
+            str(labels[i]),
+            fontsize=fontsize,
+            alpha=0.85
+        )
+
+def _annotate_points_3d(ax, x, y, z, labels, idx, max_labels=80, fontsize=7):
+    if idx.size == 0:
+        return
+
+    if idx.size > max_labels:
+        pick = np.linspace(0, idx.size - 1, max_labels).astype(int)
+        idx = idx[pick]
+
+    for i in idx:
+        ax.text(
+            float(x[i]), float(y[i]), float(z[i]),
+            str(labels[i]),
+            fontsize=fontsize,
+            alpha=0.85
+        )
+
+def visualize_pca(
+    experiment_folder,
+    outdir=None,
+    show=False,
+    v_range=(0, 99)
+):
+    """
+    Visualize PCA results for a given experiment.
+
+    Produces:
+        - full plots
+        - no person nodes
+        - no person + no window nodes
+
+    Saves into:
+        version2/<experiment_folder>/plots/
+    """
+
     exp_dir = os.path.join(BASE_DIR, "version2", experiment_folder)
+
+    # Default output dir inside experiment folder
+    if outdir is None:
+        outdir = os.path.join(exp_dir, "plots")
+
+    os.makedirs(outdir, exist_ok=True)
 
     pca_cache = os.path.join(
         exp_dir,
         f"{experiment_folder}_pca.joblib"
     )
 
-    embeddings_csv = os.path.join(
-        exp_dir,
-        "embeddings_and_labels.csv"
-    )
-
     if not os.path.exists(pca_cache):
+        print(f"[VIS] Expected PCA cache not found:")
+        print(f"       {pca_cache}")
+        print(f"[VIS] Available experiment folders:")
+        print(os.listdir(os.path.join(BASE_DIR, "version2")))
         raise FileNotFoundError(pca_cache)
-
-    if not os.path.exists(embeddings_csv):
-        raise FileNotFoundError(embeddings_csv)
 
     print("[VIS] Loading PCA cache...")
     pca_data = joblib.load(pca_cache)
 
-    coords = pca_data["coords"]
-
-    print("[VIS] Loading entity order...")
-    df = pd.read_csv(embeddings_csv)
-
-    # init_vals already aligned to embedding rows
-    vals = np.asarray(pca_data["init_vals"], dtype=float)
-
-    if len(vals) != coords.shape[0]:
-        raise ValueError("Init values do not align with PCA rows")
-
-    mean_val = np.nanmean(vals)
-    valid = ~np.isnan(vals)
-
-    # ---------------------------------------
-    # Plot
-    # ---------------------------------------
-    os.makedirs(outdir, exist_ok=True)
+    coords = np.asarray(pca_data["coords"])
+    entity_labels = list(pca_data["entities"])
 
     cmap_grad = LinearSegmentedColormap.from_list(
         "blue_red",
@@ -58,59 +101,126 @@ def visualize_pca(experiment_folder, outdir="plots"):
 
     x = coords[:, 0]
     y = coords[:, 1]
+    z = coords[:, 2]
 
-    fig, ax = plt.subplots(figsize=(10, 8))
+    v_idx = []
+    v_vals = []
+    person_idx = []
+    window_idx = []
+    other_idx = []
 
-    # Points without init values
-    ax.scatter(
-        x[~valid],
-        y[~valid],
-        color="lightgray",
-        alpha=0.25,
-        s=60,
-        label="No init value"
-    )
+    for i, label in enumerate(entity_labels):
+        if label.startswith("person"):
+            person_idx.append(i)
+        elif label.startswith("Window"):
+            window_idx.append(i)
+        elif label.startswith("v"):
+            try:
+                num = int(label[1:])
+                v_idx.append(i)
+                v_vals.append(num)
+            except:
+                other_idx.append(i)
+        else:
+            other_idx.append(i)
 
-    # Points with init values
-    sc = ax.scatter(
-        x[valid],
-        y[valid],
-        c=vals[valid],
-        cmap=cmap_grad,
-        alpha=0.6,
-        s=80,
-        edgecolor=(0, 0, 0, 0.3),
-        linewidths=0.4,
-        label="Init value"
-    )
+    v_idx = np.array(v_idx)
+    v_vals = np.array(v_vals)
+    person_idx = np.array(person_idx)
+    window_idx = np.array(window_idx)
+    other_idx = np.array(other_idx)
 
-    # Centered numeric labels
-    for i in np.where(valid)[0]:
-        txt_color = "white" if vals[i] >= mean_val else "black"
+    def plot_variant(name, keep_mask):
 
-        ax.text(
-            x[i],
-            y[i],
-            f"{vals[i]:.0f}",
-            ha="center",
-            va="center",
-            fontsize=9,
-            weight="bold",
-            color=txt_color
-        )
+        # 2D
+        fig2, ax2 = plt.subplots(figsize=(10, 8))
 
-    cbar = plt.colorbar(sc, ax=ax)
-    cbar.set_label("Initialization Value")
+        idx = np.intersect1d(other_idx, keep_mask)
+        if idx.size:
+            ax2.scatter(x[idx], y[idx], color="lightgray", alpha=0.25, s=55)
 
-    ax.set_title("PCA: PC1 vs PC2")
-    ax.set_xlabel("PC1")
-    ax.set_ylabel("PC2")
-    ax.legend()
+        idx = np.intersect1d(person_idx, keep_mask)
+        if idx.size:
+            ax2.scatter(x[idx], y[idx], color="green", alpha=0.8, s=70)
 
-    plt.tight_layout()
+        idx = np.intersect1d(window_idx, keep_mask)
+        if idx.size:
+            ax2.scatter(x[idx], y[idx], color="black", alpha=0.8, s=70)
 
-    out_path = os.path.join(outdir, "PCA_PC1_PC2.svg")
-    plt.savefig(out_path, bbox_inches="tight")
-    plt.close(fig)
+        idx = np.intersect1d(v_idx, keep_mask)
+        if idx.size:
+            vals = v_vals[np.isin(v_idx, idx)]
+            sc = ax2.scatter(
+                x[idx], y[idx],
+                c=vals,
+                cmap=cmap_grad,
+                alpha=0.9,
+                s=85
+            )
+            cbar = plt.colorbar(sc, ax=ax2)
+            cbar.set_label("v index")
 
-    print(f"[VIS] Saved → {out_path}")
+        ax2.set_title(f"{experiment_folder} — {name} (2D)")
+        ax2.set_xlabel("PC1")
+        ax2.set_ylabel("PC2")
+        plt.tight_layout()
+
+        path2 = os.path.join(outdir, f"{experiment_folder}_{name}_2D.svg")
+        plt.savefig(path2, bbox_inches="tight")
+        if show: plt.show()
+        plt.close(fig2)
+
+        # 3D
+        fig3 = plt.figure(figsize=(11, 9))
+        ax3 = fig3.add_subplot(111, projection="3d")
+
+        idx = np.intersect1d(other_idx, keep_mask)
+        if idx.size:
+            ax3.scatter(x[idx], y[idx], z[idx], color="lightgray", alpha=0.18, s=35)
+
+        idx = np.intersect1d(person_idx, keep_mask)
+        if idx.size:
+            ax3.scatter(x[idx], y[idx], z[idx], color="purple", alpha=0.85, s=45)
+
+        idx = np.intersect1d(window_idx, keep_mask)
+        if idx.size:
+            ax3.scatter(x[idx], y[idx], z[idx], color="green", alpha=0.85, s=45)
+
+        idx = np.intersect1d(v_idx, keep_mask)
+        if idx.size:
+            vals = v_vals[np.isin(v_idx, idx)]
+            sc = ax3.scatter(
+                x[idx], y[idx], z[idx],
+                c=vals,
+                cmap=cmap_grad,
+                alpha=0.9,
+                s=55
+            )
+            cbar = plt.colorbar(sc, ax=ax3, shrink=0.6)
+            cbar.set_label("v index")
+
+        ax3.set_title(f"{experiment_folder} — {name} (3D)")
+        ax3.set_xlabel("PC1")
+        ax3.set_ylabel("PC2")
+        ax3.set_zlabel("PC3")
+
+        plt.tight_layout()
+
+        path3 = os.path.join(outdir, f"{experiment_folder}_{name}_3D.svg")
+        plt.savefig(path3, bbox_inches="tight")
+        if show: plt.show()
+        plt.close(fig3)
+
+        print(f"[VIS] Saved: {path2}")
+        print(f"[VIS] Saved: {path3}")
+
+    all_idx = np.arange(len(entity_labels))
+
+    plot_variant("full", all_idx)
+    no_person = np.setdiff1d(all_idx, person_idx)
+    plot_variant("no_person", no_person)
+    no_person_window = np.setdiff1d(no_person, window_idx)
+    plot_variant("no_person_window", no_person_window)
+    
+# Example usage:
+# visualize_pca("my_experiment", outdir="./learning_experiments/plots", show=False)

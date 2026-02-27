@@ -59,11 +59,10 @@ def load_KG(path: str):
     # load initialization values
     init_vals = pd.read_csv(val_path, sep="\t", header=None, names=["entity", "value"])
 
-
     # return the kg dataframe and the assigned init values
     return kg_df, init_vals        
 
-def process_embeddings(knowledge_graph, init_vals, model, seed, epochs, dimensions):
+def process_embeddings(knowledge_graph, model, seed, epochs, dimensions):
     """
     Train a PyKEEN model on the given KG and align .val values
     with PyKEEN's internal entity ordering.
@@ -179,7 +178,6 @@ def create_embeddings(
     print("[STEP 2] Training embeddings...")
     result= process_embeddings(
         knowledge_graph,
-        init_vals,
         model=model,
         seed=seed,
         epochs=epochs,

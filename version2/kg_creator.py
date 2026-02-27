@@ -21,7 +21,7 @@ class Window:
     def __repr__(self):
         return f"Window(path={self.path}, n={self.n}, size={len(self.elements)})"
 
-def create_kg(n_vertices, window_depth, experiment_folder, decimal_precision, high, low):
+def create_kg(n_vertices, window_depth, experiment_folder, decimal_precision, high, low, n_people):
     """
     Creates a KG for our experiments.
 
@@ -43,8 +43,8 @@ def create_kg(n_vertices, window_depth, experiment_folder, decimal_precision, hi
         #assigned_vertices[vertex] = round(assigned_vertices[vertex], decimal_precision)
         
 
-    # create people with names twice the amount of ages
-    names = [f"person{i}" for i in (range(5000))]
+    # create 5000 people
+    names = [f"person{i}" for i in (range(n_people))]
     names_with_assigned_ages = {}
     
     # assign random ages to each name
