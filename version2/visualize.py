@@ -4,6 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, Normalize
 
+person_node_color = "green"
+window_node_color = "black"
+missed_node_color = "yellow"
+
 BASE_DIR = os.environ.get(
     "SLURM_SUBMIT_DIR",
     os.path.dirname(os.path.abspath(__file__))
@@ -137,15 +141,15 @@ def visualize_pca(
 
         idx = np.intersect1d(other_idx, keep_mask)
         if idx.size:
-            ax2.scatter(x[idx], y[idx], color="lightgray", alpha=0.25, s=55)
+            ax2.scatter(x[idx], y[idx], color=missed_node_color, alpha=0.25, s=55)
 
         idx = np.intersect1d(person_idx, keep_mask)
         if idx.size:
-            ax2.scatter(x[idx], y[idx], color="green", alpha=0.8, s=70)
+            ax2.scatter(x[idx], y[idx], color=person_node_color, alpha=0.8, s=70)
 
         idx = np.intersect1d(window_idx, keep_mask)
         if idx.size:
-            ax2.scatter(x[idx], y[idx], color="black", alpha=0.8, s=70)
+            ax2.scatter(x[idx], y[idx], color=window_node_color, alpha=0.8, s=70)
 
         idx = np.intersect1d(v_idx, keep_mask)
         if idx.size:
@@ -176,15 +180,15 @@ def visualize_pca(
 
         idx = np.intersect1d(other_idx, keep_mask)
         if idx.size:
-            ax3.scatter(x[idx], y[idx], z[idx], color="lightgray", alpha=0.18, s=35)
+            ax3.scatter(x[idx], y[idx], z[idx], color=missed_node_color, alpha=0.18, s=35)
 
         idx = np.intersect1d(person_idx, keep_mask)
         if idx.size:
-            ax3.scatter(x[idx], y[idx], z[idx], color="purple", alpha=0.85, s=45)
+            ax3.scatter(x[idx], y[idx], z[idx], color=person_node_color, alpha=0.85, s=45)
 
         idx = np.intersect1d(window_idx, keep_mask)
         if idx.size:
-            ax3.scatter(x[idx], y[idx], z[idx], color="green", alpha=0.85, s=45)
+            ax3.scatter(x[idx], y[idx], z[idx], color=window_node_color, alpha=0.85, s=45)
 
         idx = np.intersect1d(v_idx, keep_mask)
         if idx.size:
