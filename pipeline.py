@@ -4,7 +4,9 @@ from kg_embedder import create_embeddings
 from pca_runner import run_pca_for_experiment
 from visualize import visualize_pca
 from experiment_logger import write_experiment_markdown
-def run_full_experiment(settings):
+from measure_ordering import measure
+
+def run_full_experiment(settings, step=4):
 
     # KG creator
     from kg_creator import create_kg
@@ -29,22 +31,31 @@ def run_full_experiment(settings):
 
     experiment_folder = f"{n_vertices}ages_{n_people}people{custom_name_addon}"
 
-    # create KG
-    print("Creating knowledge graph...")
-    create_kg(n_vertices=n_vertices, window_depth=window_depth, experiment_folder=experiment_folder, decimal_precision=decimal_precision, high=high, low=low, n_people=n_people)
+    # using steps here to avoid recreating data 
+    if step <= 1:
+        # create KG
+        print("Creating knowledge graph...")
+        create_kg(n_vertices=n_vertices, window_depth=window_depth, experiment_folder=experiment_folder, decimal_precision=decimal_precision, high=high, low=low, n_people=n_people)
         
-    # KG embedder
-    print("Creating embeddings...")
-    create_embeddings(experiment_folder=experiment_folder, model=model, seed=seed, epochs=epochs, dim=dim)
+    if step <= 2:
+        # KG embedder
+        print("Creating embeddings...")
+        create_embeddings(experiment_folder=experiment_folder, model=model, seed=seed, epochs=epochs, dim=dim)
 
-    # PCA on embeddings 
-    print("Running PCA...")
-    coords, pca_model = run_pca_for_experiment(experiment_folder=experiment_folder, n_components=3, seed=seed)
-
-    # visualizations on PCA data
-    print("Creating visualizations...")
-    visualize_pca(experiment_folder)
-
+    if step <= 3:
+        # PCA on embeddings 
+        print("Running PCA...")
+        coords, pca_model = run_pca_for_experiment(experiment_folder=experiment_folder, n_components=3, seed=seed)
+     
+    if step <= 4:
+        # visualizations on PCA data
+        print("Creating visualizations...")
+        visualize_pca(experiment_folder)
+        
+    if step <= 5:
+        print("Measuring error...")
+        measure(experiment_folder)
+     
     write_experiment_markdown(
         experiment_folder=experiment_folder,
         kg_params={
@@ -67,8 +78,8 @@ def run_full_experiment(settings):
         }
     )
     
-base_settings_depth8 = {
-    "window_depth": 8,
+base_settings_depth4 = {
+    "window_depth": 4,
     "decimal_precision": 0,
     "high": 100,
     "low": 0,
@@ -77,25 +88,22 @@ base_settings_depth8 = {
     "dim": 300
 }
 
-models = ["TransE", "LiteralE", "DistMultE"]
+models = ["RGCN", "DistMult", "MuRE", "TransE", "TransD", "DistMultLiteral"]
 
 experiments = [
-    {"n_vertices": 100,  "n_people": 5000},
-    {"n_vertices": 100,  "n_people": 100},
-    {"n_vertices": 100,  "n_people": 10},
-    {"n_vertices": 1000, "n_people": 5000},
-    {"n_vertices": 1000, "n_people": 500},
+    {"n_vertices": 100,  "n_people": 500},
+    {"n_vertices": 100,  "n_people": 5000}
 ]
 
 for model in models:
     for exp in experiments:
 
-        settings = base_settings_depth8.copy()
+        settings = base_settings_depth4.copy()
         settings.update(exp)
 
         settings["model"] = model
-        settings["custom_name_addon"] = f"_depth_8_{model}"
+        settings["custom_name_addon"] = f"_depth_4_{model}"
 
-        print(f"\nRunning: {settings['n_vertices']} ages, {settings['n_people']} people | depth 8 | {model}")
+        print(f"\nRunning: {settings['n_vertices']} ages, {settings['n_people']} people | depth 4 | {model}")
 
         run_full_experiment(settings)

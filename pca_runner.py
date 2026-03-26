@@ -24,15 +24,8 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, ListedColormap
 
 seed = 42
-from sklearn.decomposition import PCA
 import joblib
 import os
-
-import os
-import joblib
-import numpy as np
-import pandas as pd
-from sklearn.decomposition import PCA
 
 BASE_DIR = os.environ.get(
     "SLURM_SUBMIT_DIR",

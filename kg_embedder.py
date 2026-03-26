@@ -62,18 +62,46 @@ def load_KG(path: str):
     # return the kg dataframe and the assigned init values
     return kg_df, init_vals        
 
-def process_embeddings(knowledge_graph, model, seed, epochs, dimensions):
+from pykeen.triples import TriplesFactory, TriplesNumericLiteralsFactory
+
+LITERAL_MODELS = {"distmultliteral", "complexliteral"}
+
+def process_embeddings(knowledge_graph, init_vals, model, seed, epochs, dimensions):
     """
-    Train a PyKEEN model on the given KG and align .val values
-    with PyKEEN's internal entity ordering.
+    Train a PyKEEN model. Automatically switches to literal factory
+    if the model requires numeric literals.
     """
 
-    # prep KG for embedding
-    tf = TriplesFactory.from_labeled_triples(
-        knowledge_graph[["head", "relation", "tail"]].values
-    )
+    model_name = model.lower()
 
-    # split for testing and validation
+    triples = knowledge_graph[["head", "relation", "tail"]].values
+
+    # -------------------------------------------------
+    # Detect literal model
+    # -------------------------------------------------
+    if model_name in LITERAL_MODELS:
+
+        print("[INFO] Literal model detected → loading numeric literals")
+
+        numeric_triples = np.array([
+            [row.entity, "value", float(row.value)]
+            for row in init_vals.itertuples()
+        ], dtype=object)
+
+        tf = TriplesNumericLiteralsFactory.from_labeled_triples(
+            triples=triples,
+            numeric_triples=numeric_triples,
+        )
+
+    else:
+
+        print("[INFO] Standard model detected → ignoring .val literals")
+
+        tf = TriplesFactory.from_labeled_triples(triples)
+
+    # -------------------------------------------------
+    # Train / test split
+    # -------------------------------------------------
     training, testing, validation = tf.split([0.8, 0.1, 0.1])
 
     print(f"[INFO] Training {model}...")
@@ -87,7 +115,8 @@ def process_embeddings(knowledge_graph, model, seed, epochs, dimensions):
         model_kwargs={"embedding_dim": dimensions},
         training_kwargs={"num_epochs": epochs},
     )
-    print(f"[INFO] Training complete!")
+
+    print("[INFO] Training complete!")
 
     return result
 
@@ -176,8 +205,9 @@ def create_embeddings(
     # 2. Train embeddings
     # -----------------------------------
     print("[STEP 2] Training embeddings...")
-    result= process_embeddings(
+    result = process_embeddings(
         knowledge_graph,
+        init_vals,
         model=model,
         seed=seed,
         epochs=epochs,
