@@ -2,7 +2,7 @@
 
 ## Experiment
 **Folder:** `100ages_500people_depth_4_RGCN`  
-**Timestamp:** 2026-03-26 06:00:52 UTC
+**Timestamp:** 2026-03-26 06:46:33 UTC
 
 ---
 

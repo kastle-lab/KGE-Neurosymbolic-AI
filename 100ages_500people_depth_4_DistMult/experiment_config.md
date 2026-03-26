@@ -2,7 +2,7 @@
 
 ## Experiment
 **Folder:** `100ages_500people_depth_4_DistMult`  
-**Timestamp:** 2026-03-26 06:01:01 UTC
+**Timestamp:** 2026-03-26 06:46:46 UTC
 
 ---
 
