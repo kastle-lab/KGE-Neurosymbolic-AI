@@ -9,6 +9,10 @@ manim_3d_data.npz
 *.def
 *.sh
 *.joblib
-*.csv
-*.tsv
+old-plots-and-code/*.csv
+old-plots-and-code/*.tsv
 *.val
+*.json
+*.pkl
+*.gz
+*.pth
