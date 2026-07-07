@@ -127,6 +127,10 @@ def compare_methods(
 
         mean_diff = diff.mean()
         median_diff = diff.median()
+                
+        std_diff = diff.std(ddof=1)
+        std_query_abs_error = q.std(ddof=1)
+        std_learning_abs_error = l.std(ddof=1)
 
         better_method = (
             "learning"
@@ -171,6 +175,12 @@ def compare_methods(
 
             "bootstrap_mean_diff_ci_low": ci_low,
             "bootstrap_mean_diff_ci_high": ci_high,
+                        
+            "std_query_abs_error": std_query_abs_error,
+            "std_learning_abs_error": std_learning_abs_error,
+
+            "std_error_difference_query_minus_learning": std_diff,
+            
         })
 
     result_df = pd.DataFrame(rows)

@@ -1,5 +1,3 @@
-# Investigating Latent Representations under Structured Sampling and Constraints
+# README
 
-`pipeline.py` contains all the code needed to create the KGs, embeddings, and collects data for the distance from the query vector `h ⊙ R + r`.
-
-`analyze_pipeline.py` performs calculates on the data to assemble a table of averages for the query method and the learned mapping method. Calls compare_methods to demonstrate performance between methods.
+Each results folder (100people, 500people, no_windows_100people) contains a `results_report.md` file. That will have all the data found in the CSVs in one place. 

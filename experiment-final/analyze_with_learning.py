@@ -1,5 +1,4 @@
 import argparse
-from pathlib import Path
 
 import pandas as pd
 
@@ -122,6 +121,9 @@ def summarize_runs(person_df, count_column_name="n_people"):
             "median_abs_error": group["abs_error"].median(),
             "max_abs_error": group["abs_error"].max(),
             "mean_error": group["error"].mean(),
+                        
+            "std_error": group["error"].std(),
+            "std_abs_error": group["abs_error"].std(),
         })
 
     return pd.DataFrame(summary_rows)

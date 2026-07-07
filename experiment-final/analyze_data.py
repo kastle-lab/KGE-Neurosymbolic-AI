@@ -81,11 +81,18 @@ def summarize_runs(person_df, max_k, count_column_name="n_people"):
 
             "mean_top1_abs_error": group["top1_abs_error"].mean(),
             "median_top1_abs_error": group["top1_abs_error"].median(),
+
+            "mean_top1_error": group["top1_error"].mean(),
+            "std_top1_error": group["top1_error"].std(),
+            "std_top1_abs_error": group["top1_abs_error"].std(),
+            
         }
 
         for k in range(1, max_k + 1):
             row[f"mean_top{k}_avg_abs_error"] = group[f"top{k}_avg_abs_error"].mean()
-
+            row[f"std_top{k}_avg_error"] = group[f"top{k}_avg_error"].std()
+            row[f"std_top{k}_avg_abs_error"] = group[f"top{k}_avg_abs_error"].std()
+            
         summary_rows.append(row)
 
     return pd.DataFrame(summary_rows)
