@@ -5,17 +5,62 @@ import pandas as pd
 from load_vectors import load_hasAge_bundle
 from compute_distances import compute_query_points
 
+def load_person_to_v_from_tsv(
+    tsv_path,
+    relation_string="hasAge",
+):
+    person_to_v = {}
+
+    with open(tsv_path, "r", encoding="utf-8") as infile:
+        for line_number, line in enumerate(infile, start=1):
+            line = line.rstrip("\r\n")
+
+            if not line:
+                continue
+
+            parts = line.split("\t")
+
+            if len(parts) != 3:
+                raise ValueError(
+                    f"Malformed triple in {tsv_path} at line "
+                    f"{line_number}: expected 3 columns."
+                )
+
+            head, relation, tail = parts
+
+            if relation != relation_string:
+                continue
+
+            if head in person_to_v and person_to_v[head] != tail:
+                raise ValueError(
+                    f"Conflicting {relation_string} values for "
+                    f"{head!r}: {person_to_v[head]!r} and {tail!r}."
+                )
+
+            person_to_v[head] = tail
+
+    if not person_to_v:
+        raise ValueError(
+            f"No {relation_string!r} triples found in {tsv_path}."
+        )
+
+    return person_to_v
 
 def v_num(v_label):
     if v_label is None:
         return None
 
-    m = re.search(r"v(\d+)$", str(v_label))
+    match = re.search(
+        r"[vV](-?\d+(?:\.\d+)?)$",
+        str(v_label).strip(),
+    )
 
-    if m is None:
+    if match is None:
         return None
 
-    return int(m.group(1))
+    value = float(match.group(1))
+
+    return int(value) if value.is_integer() else value
 
 
 def compare_all_distances_to_truth(
@@ -91,13 +136,23 @@ def compare_all_distances_to_truth(
 def evaluate_query_point_run(
     original_run_path,
     evaluated_run_path,
+    original_tsv_path,
+    evaluated_tsv_path,
     output_csv_path=None,
 ):
+    
     original_bundle = load_hasAge_bundle(original_run_path)
     evaluated_bundle = load_hasAge_bundle(evaluated_run_path)
 
-    truth_person_to_v = original_bundle["person_to_v"]
-    run_person_to_v = evaluated_bundle["person_to_v"]
+    truth_person_to_v = load_person_to_v_from_tsv(
+        original_tsv_path,
+        relation_string="hasAge",
+    )
+
+    run_person_to_v = load_person_to_v_from_tsv(
+        evaluated_tsv_path,
+        relation_string="hasAge",
+    )
 
     v_embeddings = evaluated_bundle["v_embeddings"]
     person_embeddings = evaluated_bundle["person_embeddings"]

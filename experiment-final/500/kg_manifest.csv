@@ -1,0 +1,13 @@
+label,tsv_path,window_condition,removal_percent,relation,seed,nested_removals,sort_order
+with_windows_original,kgs/with_windows_original.tsv,with_windows,0.0,hasAge,42,True,0
+without_windows_original,kgs/without_windows_original.tsv,without_windows,0.0,hasAge,42,True,1
+with_windows_removed_15pct,kgs/with_windows_hasAge_removed_15pct.tsv,with_windows,15.0,hasAge,42,True,2
+without_windows_removed_15pct,kgs/without_windows_hasAge_removed_15pct.tsv,without_windows,15.0,hasAge,42,True,3
+with_windows_removed_30pct,kgs/with_windows_hasAge_removed_30pct.tsv,with_windows,30.0,hasAge,42,True,4
+without_windows_removed_30pct,kgs/without_windows_hasAge_removed_30pct.tsv,without_windows,30.0,hasAge,42,True,5
+with_windows_removed_45pct,kgs/with_windows_hasAge_removed_45pct.tsv,with_windows,45.0,hasAge,42,True,6
+without_windows_removed_45pct,kgs/without_windows_hasAge_removed_45pct.tsv,without_windows,45.0,hasAge,42,True,7
+with_windows_removed_60pct,kgs/with_windows_hasAge_removed_60pct.tsv,with_windows,60.0,hasAge,42,True,8
+without_windows_removed_60pct,kgs/without_windows_hasAge_removed_60pct.tsv,without_windows,60.0,hasAge,42,True,9
+with_windows_removed_75pct,kgs/with_windows_hasAge_removed_75pct.tsv,with_windows,75.0,hasAge,42,True,10
+without_windows_removed_75pct,kgs/without_windows_hasAge_removed_75pct.tsv,without_windows,75.0,hasAge,42,True,11
