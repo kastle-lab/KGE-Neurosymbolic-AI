@@ -2,6 +2,8 @@
 
 The readme describes the pipeline inside `experiment-final` and its imports. The files inside `old-plots-and-code` though important to motivating the research question through visualizations (PCA) of various graph embeddings, are not directly pertinent to the experiment and its results.
 
+`pipeline.py` and `pipeline.ipynb` are essentially the same though `pipeline.py` runs the embedding steps in parallel. The Jupyter notebook is easier to read.
+
 ## Experiment Overview
 
 Knowledge graph embeddings learn vector representations from the structure of a graph. Most work on knowledge graph embeddings focuses on predicting missing entities or relationships. This project instead explores a related question:
