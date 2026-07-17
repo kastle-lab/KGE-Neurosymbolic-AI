@@ -1,182 +1,311 @@
-# Knowledge Graph Windowing and Age-Removal Experiment
+# MuRE Numeric-Literal Preservation Experiment
 
-Base path: `500`
+This report summarizes age-recovery performance across paired windowed and windowless knowledge graphs. The same `hasAge` relations are removed from both structural conditions at each removal level.
 
-The experiment begins with one KG containing window structure. A paired windowless KG is derived by removing only window-related triples. The same randomly selected `hasAge` triples are then removed from both conditions at every percentage, allowing a controlled with-windows versus without-windows comparison.
+## Population Definitions
 
-## Files Used
+- **Full Population:** all people in the evaluated graph.
+- **Retained `hasAge` Relations:** only people whose `hasAge` triple remains present in that run.
+- **Removed `hasAge` Relations:** only people whose `hasAge` triple was removed from that run.
 
-- `kg_manifest.csv` — found
-- `hasAge_removal_plan.csv` — found
-- `run_year_summary.csv` — found
-- `run_year_summary_missing_only.csv` — found
-- `learning_run_summary.csv` — found
-- `learning_run_summary_missing_only.csv` — found
-- `method_comparison.csv` — found
-- `method_comparison_missing_only.csv` — found
-- `query_window_comparison.csv` — found
-- `query_window_comparison_missing_only.csv` — found
-- `learning_window_comparison.csv` — found
-- `learning_window_comparison_missing_only.csv` — found
+Every person has a `hasAge` relation in the original 0% graph. Here, *retained* and *removed* refer to whether that relation is present in the specific evaluated run.
 
-## Experiment Runs
+## Experimental Conditions
 
-| run                           | window_condition   |   removal_percent | removed_relation   | nested_removals   |   seed | tsv_path                                     |
-|:------------------------------|:-------------------|------------------:|:-------------------|:------------------|-------:|:---------------------------------------------|
-| with_windows_original         | with_windows       |                 0 | hasAge             | True              |     42 | kgs/with_windows_original.tsv                |
-| without_windows_original      | without_windows    |                 0 | hasAge             | True              |     42 | kgs/without_windows_original.tsv             |
-| with_windows_removed_15pct    | with_windows       |                15 | hasAge             | True              |     42 | kgs/with_windows_hasAge_removed_15pct.tsv    |
-| without_windows_removed_15pct | without_windows    |                15 | hasAge             | True              |     42 | kgs/without_windows_hasAge_removed_15pct.tsv |
-| with_windows_removed_30pct    | with_windows       |                30 | hasAge             | True              |     42 | kgs/with_windows_hasAge_removed_30pct.tsv    |
-| without_windows_removed_30pct | without_windows    |                30 | hasAge             | True              |     42 | kgs/without_windows_hasAge_removed_30pct.tsv |
-| with_windows_removed_45pct    | with_windows       |                45 | hasAge             | True              |     42 | kgs/with_windows_hasAge_removed_45pct.tsv    |
-| without_windows_removed_45pct | without_windows    |                45 | hasAge             | True              |     42 | kgs/without_windows_hasAge_removed_45pct.tsv |
-| with_windows_removed_60pct    | with_windows       |                60 | hasAge             | True              |     42 | kgs/with_windows_hasAge_removed_60pct.tsv    |
-| without_windows_removed_60pct | without_windows    |                60 | hasAge             | True              |     42 | kgs/without_windows_hasAge_removed_60pct.tsv |
-| with_windows_removed_75pct    | with_windows       |                75 | hasAge             | True              |     42 | kgs/with_windows_hasAge_removed_75pct.tsv    |
-| without_windows_removed_75pct | without_windows    |                75 | hasAge             | True              |     42 | kgs/without_windows_hasAge_removed_75pct.tsv |
+| Structure   | Removed   |   Total people |   Retained `hasAge` |   Removed `hasAge` |
+|:------------|:----------|---------------:|--------------------:|-------------------:|
+| Windowed    | 0%        |            500 |                 500 |                  0 |
+| Windowless  | 0%        |            500 |                 500 |                  0 |
+| Windowed    | 15%       |            500 |                 425 |                 75 |
+| Windowless  | 15%       |            500 |                 425 |                 75 |
+| Windowed    | 30%       |            500 |                 350 |                150 |
+| Windowless  | 30%       |            500 |                 350 |                150 |
+| Windowed    | 45%       |            500 |                 275 |                225 |
+| Windowless  | 45%       |            500 |                 275 |                225 |
+| Windowed    | 60%       |            500 |                 200 |                300 |
+| Windowless  | 60%       |            500 |                 200 |                300 |
+| Windowed    | 75%       |            500 |                 125 |                375 |
+| Windowless  | 75%       |            500 |                 125 |                375 |
 
-## Query-Point Method — All People
+## Query-Point Recovery
 
-| run                           | window_condition   |   removal_percent |   n_people |   mean_top1_abs_error |   median_top1_abs_error |   std_top1_abs_error | best_person   |   best_abs_error | worst_person   |   worst_abs_error |
-|:------------------------------|:-------------------|------------------:|-----------:|----------------------:|------------------------:|---------------------:|:--------------|-----------------:|:---------------|------------------:|
-| with_windows_original         | with_windows       |                 0 |        500 |                 1.632 |                       0 |               3.3327 | person0       |                0 | person28       |                18 |
-| without_windows_original      | without_windows    |                 0 |        500 |                 1.53  |                       0 |               3.3328 | person0       |                0 | person80       |                17 |
-| with_windows_removed_15pct    | with_windows       |                15 |        500 |                 2.698 |                       0 |               4.9099 | person1       |                0 | person211      |                27 |
-| without_windows_removed_15pct | without_windows    |                15 |        500 |                 2.428 |                       0 |               4.384  | person10      |                0 | person323      |                22 |
-| with_windows_removed_30pct    | with_windows       |                30 |        500 |                 3.53  |                       1 |               5.1015 | person0       |                0 | person157      |                29 |
-| without_windows_removed_30pct | without_windows    |                30 |        500 |                 3.452 |                       0 |               5.7104 | person0       |                0 | person226      |                48 |
-| with_windows_removed_45pct    | with_windows       |                45 |        500 |                 4.982 |                       2 |               6.5998 | person101     |                0 | person103      |                35 |
-| without_windows_removed_45pct | without_windows    |                45 |        500 |                 4.438 |                       2 |               5.6528 | person0       |                0 | person495      |                25 |
-| with_windows_removed_60pct    | with_windows       |                60 |        500 |                 5.16  |                       3 |               5.8215 | person100     |                0 | person204      |                39 |
-| without_windows_removed_60pct | without_windows    |                60 |        500 |                 5.082 |                       3 |               5.498  | person100     |                0 | person261      |                26 |
-| with_windows_removed_75pct    | with_windows       |                75 |        500 |                 8.754 |                       7 |               8.2029 | person101     |                0 | person115      |                45 |
-| without_windows_removed_75pct | without_windows    |                75 |        500 |                 7.694 |                       5 |               7.7636 | person101     |                0 | person451      |                41 |
+### Full Population
 
-## Query-Point Method — Missing Relations Only
+All people in the evaluated graph.
 
-| run                           | window_condition   |   removal_percent |   n_missing_people |   mean_top1_abs_error |   median_top1_abs_error |   std_top1_abs_error | best_person   |   best_abs_error | worst_person   |   worst_abs_error |
-|:------------------------------|:-------------------|------------------:|-------------------:|----------------------:|------------------------:|---------------------:|:--------------|-----------------:|:---------------|------------------:|
-| with_windows_removed_15pct    | with_windows       |                15 |                 75 |                5.36   |                       3 |               5.7437 | person1       |                0 | person397      |                22 |
-| without_windows_removed_15pct | without_windows    |                15 |                 75 |                6.1067 |                       5 |               5.2981 | person145     |                0 | person24       |                21 |
-| with_windows_removed_30pct    | with_windows       |                30 |                150 |                6.74   |                       5 |               5.7503 | person134     |                0 | person157      |                29 |
-| without_windows_removed_30pct | without_windows    |                30 |                150 |                6.2267 |                       5 |               5.6487 | person108     |                0 | person161      |                34 |
-| with_windows_removed_45pct    | with_windows       |                45 |                225 |                7.9422 |                       6 |               6.9848 | person108     |                0 | person103      |                35 |
-| without_windows_removed_45pct | without_windows    |                45 |                225 |                6.9067 |                       6 |               5.7922 | person0       |                0 | person394      |                24 |
-| with_windows_removed_60pct    | with_windows       |                60 |                300 |                6.7833 |                       5 |               5.903  | person108     |                0 | person204      |                39 |
-| without_windows_removed_60pct | without_windows    |                60 |                300 |                6.7333 |                       6 |               5.2892 | person113     |                0 | person156      |                24 |
-| with_windows_removed_75pct    | with_windows       |                75 |                375 |               10.1333 |                       8 |               8.1846 | person121     |                0 | person115      |                45 |
-| without_windows_removed_75pct | without_windows    |                75 |                375 |                9.0507 |                       7 |               7.7814 | person139     |                0 | person451      |                41 |
+| Structure   | Removed   |   N |   MAE (years) |   Median AE |   SD of AE | Best case         | Worst case         |
+|:------------|:----------|----:|--------------:|------------:|-----------:|:------------------|:-------------------|
+| Windowed    | 0%        | 500 |         1.632 |           0 |      3.333 | person0 (0.000)   | person28 (18.000)  |
+| Windowless  | 0%        | 500 |         1.53  |           0 |      3.333 | person0 (0.000)   | person80 (17.000)  |
+| Windowed    | 15%       | 500 |         2.698 |           0 |      4.91  | person1 (0.000)   | person211 (27.000) |
+| Windowless  | 15%       | 500 |         2.428 |           0 |      4.384 | person10 (0.000)  | person323 (22.000) |
+| Windowed    | 30%       | 500 |         3.53  |           1 |      5.101 | person0 (0.000)   | person157 (29.000) |
+| Windowless  | 30%       | 500 |         3.452 |           0 |      5.71  | person0 (0.000)   | person226 (48.000) |
+| Windowed    | 45%       | 500 |         4.982 |           2 |      6.6   | person101 (0.000) | person103 (35.000) |
+| Windowless  | 45%       | 500 |         4.438 |           2 |      5.653 | person0 (0.000)   | person495 (25.000) |
+| Windowed    | 60%       | 500 |         5.16  |           3 |      5.822 | person100 (0.000) | person204 (39.000) |
+| Windowless  | 60%       | 500 |         5.082 |           3 |      5.498 | person100 (0.000) | person261 (26.000) |
+| Windowed    | 75%       | 500 |         8.754 |           7 |      8.203 | person101 (0.000) | person115 (45.000) |
+| Windowless  | 75%       | 500 |         7.694 |           5 |      7.764 | person101 (0.000) | person451 (41.000) |
 
-## Learned Regression Method — All People
+### Retained `hasAge` Relations
 
-| run                           | window_condition   |   removal_percent |   n_people |   mean_abs_error |   median_abs_error |   std_abs_error | best_person   |   best_abs_error | worst_person   |   worst_abs_error |
-|:------------------------------|:-------------------|------------------:|-----------:|-----------------:|-------------------:|----------------:|:--------------|-----------------:|:---------------|------------------:|
-| with_windows_original         | with_windows       |                 0 |        500 |           0.9286 |             0.8149 |          0.7257 | person124     |           0.0016 | person6        |            3.6739 |
-| without_windows_original      | without_windows    |                 0 |        500 |           0.865  |             0.7129 |          0.6817 | person280     |           0.0009 | person431      |            3.9935 |
-| with_windows_removed_15pct    | with_windows       |                15 |        500 |           0.8711 |             0.6769 |          0.8005 | person289     |           0.0039 | person20       |            6.5659 |
-| without_windows_removed_15pct | without_windows    |                15 |        500 |           1.0429 |             0.781  |          1.0387 | person326     |           0.0002 | person200      |            7.7496 |
-| with_windows_removed_30pct    | with_windows       |                30 |        500 |           1.355  |             0.6927 |          1.7678 | person57      |           0.0015 | person79       |           11.5951 |
-| without_windows_removed_30pct | without_windows    |                30 |        500 |           1.223  |             0.6857 |          1.5351 | person88      |           0.0009 | person301      |            8.6734 |
-| with_windows_removed_45pct    | with_windows       |                45 |        500 |           1.6027 |             0.5965 |          2.132  | person485     |           0.0017 | person9        |           12.5539 |
-| without_windows_removed_45pct | without_windows    |                45 |        500 |           1.8112 |             0.561  |          2.4361 | person194     |           0.0007 | person470      |           12.8742 |
-| with_windows_removed_60pct    | with_windows       |                60 |        500 |           1.8964 |             0.9278 |          2.2683 | person440     |           0.0005 | person316      |           10.6478 |
-| without_windows_removed_60pct | without_windows    |                60 |        500 |           1.6982 |             0.7309 |          2.0738 | person46      |           0.0001 | person376      |           10.1284 |
-| with_windows_removed_75pct    | with_windows       |                75 |        500 |           1.7356 |             1.2464 |          1.8102 | person314     |           0.0002 | person334      |            8.814  |
-| without_windows_removed_75pct | without_windows    |                75 |        500 |           1.7899 |             1.2565 |          1.9344 | person131     |           0      | person139      |           10.1984 |
+Only people whose `hasAge` triple remains present in the evaluated run.
 
-## Learned Regression Method — Missing Relations Only
+| Structure   | Removed   |   N |   MAE (years) |   Median AE |   SD of AE | Best case         | Worst case         |
+|:------------|:----------|----:|--------------:|------------:|-----------:|:------------------|:-------------------|
+| Windowed    | 0%        | 500 |         1.632 |           0 |      3.333 | person0 (0.000)   | person28 (18.000)  |
+| Windowless  | 0%        | 500 |         1.53  |           0 |      3.333 | person0 (0.000)   | person80 (17.000)  |
+| Windowed    | 15%       | 425 |         2.228 |           0 |      4.598 | person101 (0.000) | person211 (27.000) |
+| Windowless  | 15%       | 425 |         1.779 |           0 |      3.861 | person10 (0.000)  | person323 (22.000) |
+| Windowed    | 30%       | 350 |         2.154 |           0 |      4.095 | person0 (0.000)   | person431 (20.000) |
+| Windowless  | 30%       | 350 |         2.263 |           0 |      5.317 | person0 (0.000)   | person226 (48.000) |
+| Windowed    | 45%       | 275 |         2.56  |           0 |      5.134 | person101 (0.000) | person87 (27.000)  |
+| Windowless  | 45%       | 275 |         2.418 |           0 |      4.655 | person101 (0.000) | person495 (25.000) |
+| Windowed    | 60%       | 200 |         2.725 |           0 |      4.764 | person100 (0.000) | person451 (31.000) |
+| Windowless  | 60%       | 200 |         2.605 |           0 |      4.846 | person100 (0.000) | person261 (26.000) |
+| Windowed    | 75%       | 125 |         4.616 |           0 |      6.762 | person101 (0.000) | person483 (27.000) |
+| Windowless  | 75%       | 125 |         3.624 |           0 |      6.136 | person101 (0.000) | person361 (32.000) |
 
-| run                           | window_condition   |   removal_percent |   n_missing_people |   mean_abs_error |   median_abs_error |   std_abs_error | best_person   |   best_abs_error | worst_person   |   worst_abs_error |
-|:------------------------------|:-------------------|------------------:|-------------------:|-----------------:|-------------------:|----------------:|:--------------|-----------------:|:---------------|------------------:|
-| with_windows_removed_15pct    | with_windows       |                15 |                 75 |           1.8626 |             1.7078 |          1.2637 | person24      |           0.0597 | person20       |            6.5659 |
-| without_windows_removed_15pct | without_windows    |                15 |                 75 |           2.255  |             1.7115 |          1.8054 | person430     |           0.0106 | person200      |            7.7496 |
-| with_windows_removed_30pct    | with_windows       |                30 |                150 |           3.1316 |             2.548  |          2.3184 | person223     |           0.0016 | person79       |           11.5951 |
-| without_windows_removed_30pct | without_windows    |                30 |                150 |           2.6544 |             2.2636 |          2.1053 | person119     |           0.0094 | person301      |            8.6734 |
-| with_windows_removed_45pct    | with_windows       |                45 |                225 |           3.145  |             2.6612 |          2.3873 | person200     |           0.0307 | person9        |           12.5539 |
-| without_windows_removed_45pct | without_windows    |                45 |                225 |           3.6735 |             3.0559 |          2.6118 | person246     |           0.0156 | person470      |           12.8742 |
-| with_windows_removed_60pct    | with_windows       |                60 |                300 |           3.1098 |             2.5919 |          2.2117 | person405     |           0.0768 | person316      |           10.6478 |
-| without_windows_removed_60pct | without_windows    |                60 |                300 |           2.7926 |             2.3626 |          2.0425 | person196     |           0.0238 | person376      |           10.1284 |
-| with_windows_removed_75pct    | with_windows       |                75 |                375 |           2.3065 |             1.9004 |          1.7506 | person5       |           0.0296 | person334      |            8.814  |
-| without_windows_removed_75pct | without_windows    |                75 |                375 |           2.3804 |             1.842  |          1.8958 | person77      |           0.0014 | person139      |           10.1984 |
+### Removed `hasAge` Relations
 
-## Query Point vs Learned Regression — All People
+Only people whose `hasAge` triple was removed from the evaluated run.
 
-| run                           | window_condition   |   removal_percent |   n_pairs | missing_only   |   mean_query_abs_error |   mean_learning_abs_error |   mean_error_difference_query_minus_learning | better_method_by_mean   |   paired_t_p_value |   wilcoxon_p_value |   cohen_dz_query_minus_learning |   bootstrap_mean_diff_ci_low |   bootstrap_mean_diff_ci_high |
-|:------------------------------|:-------------------|------------------:|----------:|:---------------|-----------------------:|--------------------------:|---------------------------------------------:|:------------------------|-------------------:|-------------------:|--------------------------------:|-----------------------------:|------------------------------:|
-| with_windows_original         | with_windows       |                 0 |       500 | False          |                  1.632 |                    0.9286 |                                       0.7034 | learned_regression      |                  0 |             0.0029 |                          0.2067 |                       0.4181 |                        1.0111 |
-| without_windows_original      | without_windows    |                 0 |       500 | False          |                  1.53  |                    0.865  |                                       0.665  | learned_regression      |                  0 |             0      |                          0.1962 |                       0.3779 |                        0.966  |
-| with_windows_removed_15pct    | with_windows       |                15 |       500 | False          |                  2.698 |                    0.8711 |                                       1.8269 | learned_regression      |                  0 |             0.0096 |                          0.378  |                       1.4162 |                        2.2678 |
-| without_windows_removed_15pct | without_windows    |                15 |       500 | False          |                  2.428 |                    1.0429 |                                       1.3851 | learned_regression      |                  0 |             0.5514 |                          0.3181 |                       1.0014 |                        1.7781 |
-| with_windows_removed_30pct    | with_windows       |                30 |       500 | False          |                  3.53  |                    1.355  |                                       2.175  | learned_regression      |                  0 |             0      |                          0.4426 |                       1.758  |                        2.6171 |
-| without_windows_removed_30pct | without_windows    |                30 |       500 | False          |                  3.452 |                    1.223  |                                       2.229  | learned_regression      |                  0 |             0      |                          0.3976 |                       1.7579 |                        2.7304 |
-| with_windows_removed_45pct    | with_windows       |                45 |       500 | False          |                  4.982 |                    1.6027 |                                       3.3793 | learned_regression      |                  0 |             0      |                          0.5205 |                       2.8114 |                        3.9605 |
-| without_windows_removed_45pct | without_windows    |                45 |       500 | False          |                  4.438 |                    1.8112 |                                       2.6268 | learned_regression      |                  0 |             0      |                          0.4693 |                       2.1554 |                        3.1262 |
-| with_windows_removed_60pct    | with_windows       |                60 |       500 | False          |                  5.16  |                    1.8964 |                                       3.2636 | learned_regression      |                  0 |             0      |                          0.5445 |                       2.7626 |                        3.7962 |
-| without_windows_removed_60pct | without_windows    |                60 |       500 | False          |                  5.082 |                    1.6982 |                                       3.3838 | learned_regression      |                  0 |             0      |                          0.623  |                       2.9148 |                        3.8715 |
-| with_windows_removed_75pct    | with_windows       |                75 |       500 | False          |                  8.754 |                    1.7356 |                                       7.0184 | learned_regression      |                  0 |             0      |                          0.8708 |                       6.3222 |                        7.7514 |
-| without_windows_removed_75pct | without_windows    |                75 |       500 | False          |                  7.694 |                    1.7899 |                                       5.9041 | learned_regression      |                  0 |             0      |                          0.7439 |                       5.2103 |                        6.5979 |
+| Structure   | Removed   |   N |   MAE (years) |   Median AE |   SD of AE | Best case         | Worst case         |
+|:------------|:----------|----:|--------------:|------------:|-----------:|:------------------|:-------------------|
+| Windowed    | 15%       |  75 |         5.36  |           3 |      5.744 | person1 (0.000)   | person397 (22.000) |
+| Windowless  | 15%       |  75 |         6.107 |           5 |      5.298 | person145 (0.000) | person24 (21.000)  |
+| Windowed    | 30%       | 150 |         6.74  |           5 |      5.75  | person134 (0.000) | person157 (29.000) |
+| Windowless  | 30%       | 150 |         6.227 |           5 |      5.649 | person108 (0.000) | person161 (34.000) |
+| Windowed    | 45%       | 225 |         7.942 |           6 |      6.985 | person108 (0.000) | person103 (35.000) |
+| Windowless  | 45%       | 225 |         6.907 |           6 |      5.792 | person0 (0.000)   | person394 (24.000) |
+| Windowed    | 60%       | 300 |         6.783 |           5 |      5.903 | person108 (0.000) | person204 (39.000) |
+| Windowless  | 60%       | 300 |         6.733 |           6 |      5.289 | person113 (0.000) | person156 (24.000) |
+| Windowed    | 75%       | 375 |        10.133 |           8 |      8.185 | person121 (0.000) | person115 (45.000) |
+| Windowless  | 75%       | 375 |         9.051 |           7 |      7.781 | person139 (0.000) | person451 (41.000) |
 
-## Query Point vs Learned Regression — Missing Relations Only
+## Learned-Regression Recovery
 
-| run                           | window_condition   |   removal_percent |   n_pairs | missing_only   |   mean_query_abs_error |   mean_learning_abs_error |   mean_error_difference_query_minus_learning | better_method_by_mean   |   paired_t_p_value |   wilcoxon_p_value |   cohen_dz_query_minus_learning |   bootstrap_mean_diff_ci_low |   bootstrap_mean_diff_ci_high |
-|:------------------------------|:-------------------|------------------:|----------:|:---------------|-----------------------:|--------------------------:|---------------------------------------------:|:------------------------|-------------------:|-------------------:|--------------------------------:|-----------------------------:|------------------------------:|
-| with_windows_removed_15pct    | with_windows       |                15 |        75 | True           |                 5.36   |                    1.8626 |                                       3.4974 | learned_regression      |                  0 |                  0 |                          0.6239 |                       2.2908 |                        4.8269 |
-| without_windows_removed_15pct | without_windows    |                15 |        75 | True           |                 6.1067 |                    2.255  |                                       3.8516 | learned_regression      |                  0 |                  0 |                          0.6851 |                       2.653  |                        5.1185 |
-| with_windows_removed_30pct    | with_windows       |                30 |       150 | True           |                 6.74   |                    3.1316 |                                       3.6084 | learned_regression      |                  0 |                  0 |                          0.5844 |                       2.6495 |                        4.6218 |
-| without_windows_removed_30pct | without_windows    |                30 |       150 | True           |                 6.2267 |                    2.6544 |                                       3.5723 | learned_regression      |                  0 |                  0 |                          0.5803 |                       2.5842 |                        4.534  |
-| with_windows_removed_45pct    | with_windows       |                45 |       225 | True           |                 7.9422 |                    3.145  |                                       4.7972 | learned_regression      |                  0 |                  0 |                          0.6291 |                       3.8392 |                        5.7862 |
-| without_windows_removed_45pct | without_windows    |                45 |       225 | True           |                 6.9067 |                    3.6735 |                                       3.2332 | learned_regression      |                  0 |                  0 |                          0.4952 |                       2.3872 |                        4.1132 |
-| with_windows_removed_60pct    | with_windows       |                60 |       300 | True           |                 6.7833 |                    3.1098 |                                       3.6736 | learned_regression      |                  0 |                  0 |                          0.551  |                       2.9224 |                        4.3942 |
-| without_windows_removed_60pct | without_windows    |                60 |       300 | True           |                 6.7333 |                    2.7926 |                                       3.9407 | learned_regression      |                  0 |                  0 |                          0.6878 |                       3.2838 |                        4.5967 |
-| with_windows_removed_75pct    | with_windows       |                75 |       375 | True           |                10.1333 |                    2.3065 |                                       7.8268 | learned_regression      |                  0 |                  0 |                          0.9431 |                       7.0202 |                        8.6758 |
-| without_windows_removed_75pct | without_windows    |                75 |       375 | True           |                 9.0507 |                    2.3804 |                                       6.6703 | learned_regression      |                  0 |                  0 |                          0.8018 |                       5.8841 |                        7.5351 |
+### Full Population
 
-## Window Comparison — Query Point, All People
+All people in the evaluated graph.
 
-| method      |   removal_percent |   n_pairs | missing_only   |   mean_with_windows_abs_error |   mean_without_windows_abs_error |   mean_error_difference_with_minus_without | better_window_condition_by_mean   |   paired_t_p_value |   wilcoxon_p_value |   cohen_dz_with_minus_without |   bootstrap_mean_diff_ci_low |   bootstrap_mean_diff_ci_high |
-|:------------|------------------:|----------:|:---------------|------------------------------:|---------------------------------:|-------------------------------------------:|:----------------------------------|-------------------:|-------------------:|------------------------------:|-----------------------------:|------------------------------:|
-| query_point |                 0 |       500 | False          |                         1.632 |                            1.53  |                                      0.102 | without_windows                   |             0.6304 |             0.6599 |                        0.0215 |                       -0.304 |                        0.52   |
-| query_point |                15 |       500 | False          |                         2.698 |                            2.428 |                                      0.27  | without_windows                   |             0.3292 |             0.5543 |                        0.0437 |                       -0.282 |                        0.82   |
-| query_point |                30 |       500 | False          |                         3.53  |                            3.452 |                                      0.078 | without_windows                   |             0.8106 |             0.2692 |                        0.0107 |                       -0.58  |                        0.71   |
-| query_point |                45 |       500 | False          |                         4.982 |                            4.438 |                                      0.544 | without_windows                   |             0.1164 |             0.259  |                        0.0703 |                       -0.13  |                        1.214  |
-| query_point |                60 |       500 | False          |                         5.16  |                            5.082 |                                      0.078 | without_windows                   |             0.8159 |             0.9449 |                        0.0104 |                       -0.574 |                        0.7341 |
-| query_point |                75 |       500 | False          |                         8.754 |                            7.694 |                                      1.06  | without_windows                   |             0.0156 |             0.047  |                        0.1085 |                        0.232 |                        1.94   |
+| Structure   | Removed   |   N |   MAE (years) |   Median AE |   SD of AE | Best case         | Worst case         |
+|:------------|:----------|----:|--------------:|------------:|-----------:|:------------------|:-------------------|
+| Windowed    | 0%        | 500 |         0.929 |       0.815 |      0.726 | person124 (0.002) | person6 (3.674)    |
+| Windowless  | 0%        | 500 |         0.865 |       0.713 |      0.682 | person280 (0.001) | person431 (3.993)  |
+| Windowed    | 15%       | 500 |         0.871 |       0.677 |      0.801 | person289 (0.004) | person20 (6.566)   |
+| Windowless  | 15%       | 500 |         1.043 |       0.781 |      1.039 | person326 (0.000) | person200 (7.750)  |
+| Windowed    | 30%       | 500 |         1.355 |       0.693 |      1.768 | person57 (0.002)  | person79 (11.595)  |
+| Windowless  | 30%       | 500 |         1.223 |       0.686 |      1.535 | person88 (0.001)  | person301 (8.673)  |
+| Windowed    | 45%       | 500 |         1.603 |       0.597 |      2.132 | person485 (0.002) | person9 (12.554)   |
+| Windowless  | 45%       | 500 |         1.811 |       0.561 |      2.436 | person194 (0.001) | person470 (12.874) |
+| Windowed    | 60%       | 500 |         1.896 |       0.928 |      2.268 | person440 (0.001) | person316 (10.648) |
+| Windowless  | 60%       | 500 |         1.698 |       0.731 |      2.074 | person46 (0.000)  | person376 (10.128) |
+| Windowed    | 75%       | 500 |         1.736 |       1.246 |      1.81  | person314 (0.000) | person334 (8.814)  |
+| Windowless  | 75%       | 500 |         1.79  |       1.256 |      1.934 | person131 (0.000) | person139 (10.198) |
 
-## Window Comparison — Query Point, Missing Relations Only
+### Retained `hasAge` Relations
 
-| method      |   removal_percent |   n_pairs | missing_only   |   mean_with_windows_abs_error |   mean_without_windows_abs_error |   mean_error_difference_with_minus_without | better_window_condition_by_mean   |   paired_t_p_value |   wilcoxon_p_value |   cohen_dz_with_minus_without |   bootstrap_mean_diff_ci_low |   bootstrap_mean_diff_ci_high |
-|:------------|------------------:|----------:|:---------------|------------------------------:|---------------------------------:|-------------------------------------------:|:----------------------------------|-------------------:|-------------------:|------------------------------:|-----------------------------:|------------------------------:|
-| query_point |                15 |        75 | True           |                        5.36   |                           6.1067 |                                    -0.7467 | with_windows                      |             0.3638 |             0.2695 |                       -0.1055 |                      -2.3467 |                        0.84   |
-| query_point |                30 |       150 | True           |                        6.74   |                           6.2267 |                                     0.5133 | without_windows                   |             0.4305 |             0.1882 |                        0.0645 |                      -0.7467 |                        1.7867 |
-| query_point |                45 |       225 | True           |                        7.9422 |                           6.9067 |                                     1.0356 | without_windows                   |             0.0685 |             0.1249 |                        0.122  |                      -0.0444 |                        2.1512 |
-| query_point |                60 |       300 | True           |                        6.7833 |                           6.7333 |                                     0.05   | without_windows                   |             0.9119 |             0.808  |                        0.0064 |                      -0.8133 |                        0.9101 |
-| query_point |                75 |       375 | True           |                       10.1333 |                           9.0507 |                                     1.0827 | without_windows                   |             0.0386 |             0.0862 |                        0.1072 |                       0.0827 |                        2.1067 |
+Only people whose `hasAge` triple remains present in the evaluated run.
 
-## Window Comparison — Learned Regression, All People
+| Structure   | Removed   |   N |   MAE (years) |   Median AE |   SD of AE | Best case         | Worst case        |
+|:------------|:----------|----:|--------------:|------------:|-----------:|:------------------|:------------------|
+| Windowed    | 0%        | 500 |         0.929 |       0.815 |      0.726 | person124 (0.002) | person6 (3.674)   |
+| Windowless  | 0%        | 500 |         0.865 |       0.713 |      0.682 | person280 (0.001) | person431 (3.993) |
+| Windowed    | 15%       | 425 |         0.696 |       0.58  |      0.52  | person289 (0.004) | person399 (2.852) |
+| Windowless  | 15%       | 425 |         0.829 |       0.705 |      0.629 | person326 (0.000) | person37 (3.701)  |
+| Windowed    | 30%       | 350 |         0.594 |       0.462 |      0.485 | person57 (0.002)  | person448 (2.569) |
+| Windowless  | 30%       | 350 |         0.61  |       0.532 |      0.468 | person88 (0.001)  | person164 (2.484) |
+| Windowed    | 45%       | 275 |         0.341 |       0.276 |      0.258 | person485 (0.002) | person263 (1.542) |
+| Windowless  | 45%       | 275 |         0.287 |       0.247 |      0.229 | person194 (0.001) | person348 (1.179) |
+| Windowed    | 60%       | 200 |         0.076 |       0.064 |      0.057 | person440 (0.001) | person401 (0.285) |
+| Windowless  | 60%       | 200 |         0.056 |       0.05  |      0.04  | person46 (0.000)  | person61 (0.210)  |
+| Windowed    | 75%       | 125 |         0.023 |       0.02  |      0.017 | person314 (0.000) | person70 (0.076)  |
+| Windowless  | 75%       | 125 |         0.019 |       0.014 |      0.015 | person131 (0.000) | person261 (0.078) |
 
-| method             |   removal_percent |   n_pairs | missing_only   |   mean_with_windows_abs_error |   mean_without_windows_abs_error |   mean_error_difference_with_minus_without | better_window_condition_by_mean   |   paired_t_p_value |   wilcoxon_p_value |   cohen_dz_with_minus_without |   bootstrap_mean_diff_ci_low |   bootstrap_mean_diff_ci_high |
-|:-------------------|------------------:|----------:|:---------------|------------------------------:|---------------------------------:|-------------------------------------------:|:----------------------------------|-------------------:|-------------------:|------------------------------:|-----------------------------:|------------------------------:|
-| learned_regression |                 0 |       500 | False          |                        0.9286 |                           0.865  |                                     0.0636 | without_windows                   |             0.1446 |             0.1437 |                        0.0653 |                      -0.0202 |                        0.1459 |
-| learned_regression |                15 |       500 | False          |                        0.8711 |                           1.0429 |                                    -0.1718 | with_windows                      |             0.0008 |             0.006  |                       -0.1505 |                      -0.2694 |                       -0.0714 |
-| learned_regression |                30 |       500 | False          |                        1.355  |                           1.223  |                                     0.132  | without_windows                   |             0.1083 |             0.3952 |                        0.072  |                      -0.0281 |                        0.2942 |
-| learned_regression |                45 |       500 | False          |                        1.6027 |                           1.8112 |                                    -0.2085 | with_windows                      |             0.0558 |             0.8947 |                       -0.0857 |                      -0.4293 |                        0.0003 |
-| learned_regression |                60 |       500 | False          |                        1.8964 |                           1.6982 |                                     0.1982 | without_windows                   |             0.0519 |             0.0106 |                        0.0871 |                      -0.0078 |                        0.3979 |
-| learned_regression |                75 |       500 | False          |                        1.7356 |                           1.7899 |                                    -0.0543 | with_windows                      |             0.5746 |             0.4619 |                       -0.0251 |                      -0.2421 |                        0.1404 |
+### Removed `hasAge` Relations
 
-## Window Comparison — Learned Regression, Missing Relations Only
+Only people whose `hasAge` triple was removed from the evaluated run.
 
-| method             |   removal_percent |   n_pairs | missing_only   |   mean_with_windows_abs_error |   mean_without_windows_abs_error |   mean_error_difference_with_minus_without | better_window_condition_by_mean   |   paired_t_p_value |   wilcoxon_p_value |   cohen_dz_with_minus_without |   bootstrap_mean_diff_ci_low |   bootstrap_mean_diff_ci_high |
-|:-------------------|------------------:|----------:|:---------------|------------------------------:|---------------------------------:|-------------------------------------------:|:----------------------------------|-------------------:|-------------------:|------------------------------:|-----------------------------:|------------------------------:|
-| learned_regression |                15 |        75 | True           |                        1.8626 |                           2.255  |                                    -0.3924 | with_windows                      |             0.1334 |             0.2475 |                       -0.1752 |                      -0.9168 |                        0.1189 |
-| learned_regression |                30 |       150 | True           |                        3.1316 |                           2.6544 |                                     0.4773 | without_windows                   |             0.0668 |             0.0692 |                        0.1508 |                      -0.0264 |                        0.9894 |
-| learned_regression |                45 |       225 | True           |                        3.145  |                           3.6735 |                                    -0.5285 | with_windows                      |             0.028  |             0.0476 |                       -0.1475 |                      -0.9958 |                       -0.0477 |
-| learned_regression |                60 |       300 | True           |                        3.1098 |                           2.7926 |                                     0.3171 | without_windows                   |             0.062  |             0.0836 |                        0.1082 |                      -0.0073 |                        0.646  |
-| learned_regression |                75 |       375 | True           |                        2.3065 |                           2.3804 |                                    -0.0739 | with_windows                      |             0.5673 |             0.536  |                       -0.0296 |                      -0.3252 |                        0.1802 |
+| Structure   | Removed   |   N |   MAE (years) |   Median AE |   SD of AE | Best case         | Worst case         |
+|:------------|:----------|----:|--------------:|------------:|-----------:|:------------------|:-------------------|
+| Windowed    | 15%       |  75 |         1.863 |       1.708 |      1.264 | person24 (0.060)  | person20 (6.566)   |
+| Windowless  | 15%       |  75 |         2.255 |       1.711 |      1.805 | person430 (0.011) | person200 (7.750)  |
+| Windowed    | 30%       | 150 |         3.132 |       2.548 |      2.318 | person223 (0.002) | person79 (11.595)  |
+| Windowless  | 30%       | 150 |         2.654 |       2.264 |      2.105 | person119 (0.009) | person301 (8.673)  |
+| Windowed    | 45%       | 225 |         3.145 |       2.661 |      2.387 | person200 (0.031) | person9 (12.554)   |
+| Windowless  | 45%       | 225 |         3.674 |       3.056 |      2.612 | person246 (0.016) | person470 (12.874) |
+| Windowed    | 60%       | 300 |         3.11  |       2.592 |      2.212 | person405 (0.077) | person316 (10.648) |
+| Windowless  | 60%       | 300 |         2.793 |       2.363 |      2.042 | person196 (0.024) | person376 (10.128) |
+| Windowed    | 75%       | 375 |         2.307 |       1.9   |      1.751 | person5 (0.030)   | person334 (8.814)  |
+| Windowless  | 75%       | 375 |         2.38  |       1.842 |      1.896 | person77 (0.001)  | person139 (10.198) |
 
-## Interpretation Notes
+## Recovery-Method Comparison
 
-- Positive `mean_error_difference_query_minus_learning` means query-point error was larger, favoring learned regression.
-- Positive `mean_error_difference_with_minus_without` means the with-windows condition had larger error, favoring the windowless condition. Negative values favor the with-windows condition.
-- Missing-only tables include only people whose exact `hasAge` triple was removed at that percentage.
-- With nested removal enabled, each larger percentage includes every removal made at all smaller percentages.
+`ΔMAE (Q − R)` is query-point MAE minus learned-regression MAE. Positive values favor learned regression; negative values favor query-point recovery.
+
+### Full Population
+
+All people in the evaluated graph.
+
+| Structure   | Removed   |   N |   Query MAE |   Regression MAE |   ΔMAE (Q − R) | Lower MAE          | Paired t p   | Wilcoxon p   |   Cohen's dz | 95% bootstrap CI   |
+|:------------|:----------|----:|------------:|-----------------:|---------------:|:-------------------|:-------------|:-------------|-------------:|:-------------------|
+| Windowed    | 0%        | 500 |       1.632 |            0.929 |          0.703 | Learned Regression | <0.0001      | 0.0029       |        0.207 | [0.418, 1.011]     |
+| Windowless  | 0%        | 500 |       1.53  |            0.865 |          0.665 | Learned Regression | <0.0001      | <0.0001      |        0.196 | [0.378, 0.966]     |
+| Windowed    | 15%       | 500 |       2.698 |            0.871 |          1.827 | Learned Regression | <0.0001      | 0.0096       |        0.378 | [1.416, 2.268]     |
+| Windowless  | 15%       | 500 |       2.428 |            1.043 |          1.385 | Learned Regression | <0.0001      | 0.5514       |        0.318 | [1.001, 1.778]     |
+| Windowed    | 30%       | 500 |       3.53  |            1.355 |          2.175 | Learned Regression | <0.0001      | <0.0001      |        0.443 | [1.758, 2.617]     |
+| Windowless  | 30%       | 500 |       3.452 |            1.223 |          2.229 | Learned Regression | <0.0001      | <0.0001      |        0.398 | [1.758, 2.730]     |
+| Windowed    | 45%       | 500 |       4.982 |            1.603 |          3.379 | Learned Regression | <0.0001      | <0.0001      |        0.521 | [2.811, 3.960]     |
+| Windowless  | 45%       | 500 |       4.438 |            1.811 |          2.627 | Learned Regression | <0.0001      | <0.0001      |        0.469 | [2.155, 3.126]     |
+| Windowed    | 60%       | 500 |       5.16  |            1.896 |          3.264 | Learned Regression | <0.0001      | <0.0001      |        0.545 | [2.763, 3.796]     |
+| Windowless  | 60%       | 500 |       5.082 |            1.698 |          3.384 | Learned Regression | <0.0001      | <0.0001      |        0.623 | [2.915, 3.871]     |
+| Windowed    | 75%       | 500 |       8.754 |            1.736 |          7.018 | Learned Regression | <0.0001      | <0.0001      |        0.871 | [6.322, 7.751]     |
+| Windowless  | 75%       | 500 |       7.694 |            1.79  |          5.904 | Learned Regression | <0.0001      | <0.0001      |        0.744 | [5.210, 6.598]     |
+
+### Retained `hasAge` Relations
+
+Only people whose `hasAge` triple remains present in the evaluated run.
+
+| Structure   | Removed   |   N |   Query MAE |   Regression MAE |   ΔMAE (Q − R) | Lower MAE          | Paired t p   | Wilcoxon p   |   Cohen's dz | 95% bootstrap CI   |
+|:------------|:----------|----:|------------:|-----------------:|---------------:|:-------------------|:-------------|:-------------|-------------:|:-------------------|
+| Windowed    | 0%        | 500 |       1.632 |            0.929 |          0.703 | Learned Regression | <0.0001      | 0.0029       |        0.207 | [0.418, 1.011]     |
+| Windowless  | 0%        | 500 |       1.53  |            0.865 |          0.665 | Learned Regression | <0.0001      | <0.0001      |        0.196 | [0.378, 0.966]     |
+| Windowed    | 15%       | 425 |       2.228 |            0.696 |          1.532 | Learned Regression | <0.0001      | 0.7819       |        0.331 | [1.105, 1.983]     |
+| Windowless  | 15%       | 425 |       1.779 |            0.829 |          0.95  | Learned Regression | <0.0001      | 0.0004       |        0.241 | [0.593, 1.333]     |
+| Windowed    | 30%       | 350 |       2.154 |            0.594 |          1.561 | Learned Regression | <0.0001      | 0.5627       |        0.379 | [1.122, 2.013]     |
+| Windowless  | 30%       | 350 |       2.263 |            0.61  |          1.653 | Learned Regression | <0.0001      | 0.7002       |        0.314 | [1.120, 2.236]     |
+| Windowed    | 45%       | 275 |       2.56  |            0.341 |          2.219 | Learned Regression | <0.0001      | 0.7377       |        0.433 | [1.645, 2.832]     |
+| Windowless  | 45%       | 275 |       2.418 |            0.287 |          2.131 | Learned Regression | <0.0001      | 0.3001       |        0.458 | [1.578, 2.694]     |
+| Windowed    | 60%       | 200 |       2.725 |            0.076 |          2.649 | Learned Regression | <0.0001      | 0.0002       |        0.557 | [2.022, 3.362]     |
+| Windowless  | 60%       | 200 |       2.605 |            0.056 |          2.549 | Learned Regression | <0.0001      | 0.0867       |        0.526 | [1.890, 3.214]     |
+| Windowed    | 75%       | 125 |       4.616 |            0.023 |          4.593 | Learned Regression | <0.0001      | 0.0003       |        0.679 | [3.464, 5.778]     |
+| Windowless  | 75%       | 125 |       3.624 |            0.019 |          3.605 | Learned Regression | <0.0001      | 0.0007       |        0.588 | [2.572, 4.725]     |
+
+### Removed `hasAge` Relations
+
+Only people whose `hasAge` triple was removed from the evaluated run.
+
+| Structure   | Removed   |   N |   Query MAE |   Regression MAE |   ΔMAE (Q − R) | Lower MAE          | Paired t p   | Wilcoxon p   |   Cohen's dz | 95% bootstrap CI   |
+|:------------|:----------|----:|------------:|-----------------:|---------------:|:-------------------|:-------------|:-------------|-------------:|:-------------------|
+| Windowed    | 15%       |  75 |       5.36  |            1.863 |          3.497 | Learned Regression | <0.0001      | <0.0001      |        0.624 | [2.291, 4.827]     |
+| Windowless  | 15%       |  75 |       6.107 |            2.255 |          3.852 | Learned Regression | <0.0001      | <0.0001      |        0.685 | [2.653, 5.119]     |
+| Windowed    | 30%       | 150 |       6.74  |            3.132 |          3.608 | Learned Regression | <0.0001      | <0.0001      |        0.584 | [2.649, 4.622]     |
+| Windowless  | 30%       | 150 |       6.227 |            2.654 |          3.572 | Learned Regression | <0.0001      | <0.0001      |        0.58  | [2.584, 4.534]     |
+| Windowed    | 45%       | 225 |       7.942 |            3.145 |          4.797 | Learned Regression | <0.0001      | <0.0001      |        0.629 | [3.839, 5.786]     |
+| Windowless  | 45%       | 225 |       6.907 |            3.674 |          3.233 | Learned Regression | <0.0001      | <0.0001      |        0.495 | [2.387, 4.113]     |
+| Windowed    | 60%       | 300 |       6.783 |            3.11  |          3.674 | Learned Regression | <0.0001      | <0.0001      |        0.551 | [2.922, 4.394]     |
+| Windowless  | 60%       | 300 |       6.733 |            2.793 |          3.941 | Learned Regression | <0.0001      | <0.0001      |        0.688 | [3.284, 4.597]     |
+| Windowed    | 75%       | 375 |      10.133 |            2.307 |          7.827 | Learned Regression | <0.0001      | <0.0001      |        0.943 | [7.020, 8.676]     |
+| Windowless  | 75%       | 375 |       9.051 |            2.38  |          6.67  | Learned Regression | <0.0001      | <0.0001      |        0.802 | [5.884, 7.535]     |
+
+## Effect of Window Structure
+
+`ΔMAE (W − WL)` is windowed MAE minus windowless MAE. Positive values favor the windowless graph; negative values favor the windowed graph.
+
+### Query-Point Recovery
+
+#### Full Population
+
+All people in the evaluated graph.
+
+| Removed   |   N |   Windowed MAE |   Windowless MAE |   ΔMAE (W − WL) | Lower MAE   |   Paired t p |   Wilcoxon p |   Cohen's dz | 95% bootstrap CI   |
+|:----------|----:|---------------:|-----------------:|----------------:|:------------|-------------:|-------------:|-------------:|:-------------------|
+| 0%        | 500 |          1.632 |            1.53  |           0.102 | Windowless  |       0.6304 |       0.6599 |        0.022 | [-0.304, 0.520]    |
+| 15%       | 500 |          2.698 |            2.428 |           0.27  | Windowless  |       0.3292 |       0.5543 |        0.044 | [-0.282, 0.820]    |
+| 30%       | 500 |          3.53  |            3.452 |           0.078 | Windowless  |       0.8106 |       0.2692 |        0.011 | [-0.580, 0.710]    |
+| 45%       | 500 |          4.982 |            4.438 |           0.544 | Windowless  |       0.1164 |       0.259  |        0.07  | [-0.130, 1.214]    |
+| 60%       | 500 |          5.16  |            5.082 |           0.078 | Windowless  |       0.8159 |       0.9449 |        0.01  | [-0.574, 0.734]    |
+| 75%       | 500 |          8.754 |            7.694 |           1.06  | Windowless  |       0.0156 |       0.047  |        0.108 | [0.232, 1.940]     |
+
+#### Retained `hasAge` Relations
+
+Only people whose `hasAge` triple remains present in the evaluated run.
+
+| Removed   |   N |   Windowed MAE |   Windowless MAE |   ΔMAE (W − WL) | Lower MAE   |   Paired t p |   Wilcoxon p |   Cohen's dz | 95% bootstrap CI   |
+|:----------|----:|---------------:|-----------------:|----------------:|:------------|-------------:|-------------:|-------------:|:-------------------|
+| 0%        | 500 |          1.632 |            1.53  |           0.102 | Windowless  |       0.6304 |       0.6599 |        0.022 | [-0.304, 0.520]    |
+| 15%       | 425 |          2.228 |            1.779 |           0.449 | Windowless  |       0.1234 |       0.1834 |        0.075 | [-0.104, 1.000]    |
+| 30%       | 350 |          2.154 |            2.263 |          -0.109 | Windowed    |       0.7709 |       0.6844 |       -0.016 | [-0.886, 0.640]    |
+| 45%       | 275 |          2.56  |            2.418 |           0.142 | Windowless  |       0.7389 |       0.9314 |        0.02  | [-0.673, 0.993]    |
+| 60%       | 200 |          2.725 |            2.605 |           0.12  | Windowless  |       0.8084 |       0.6852 |        0.017 | [-0.855, 1.090]    |
+| 75%       | 125 |          4.616 |            3.624 |           0.992 | Windowless  |       0.207  |       0.3269 |        0.113 | [-0.536, 2.560]    |
+
+#### Removed `hasAge` Relations
+
+Only people whose `hasAge` triple was removed from the evaluated run.
+
+| Removed   |   N |   Windowed MAE |   Windowless MAE |   ΔMAE (W − WL) | Lower MAE   |   Paired t p |   Wilcoxon p |   Cohen's dz | 95% bootstrap CI   |
+|:----------|----:|---------------:|-----------------:|----------------:|:------------|-------------:|-------------:|-------------:|:-------------------|
+| 15%       |  75 |          5.36  |            6.107 |          -0.747 | Windowed    |       0.3638 |       0.2695 |       -0.106 | [-2.347, 0.840]    |
+| 30%       | 150 |          6.74  |            6.227 |           0.513 | Windowless  |       0.4305 |       0.1882 |        0.065 | [-0.747, 1.787]    |
+| 45%       | 225 |          7.942 |            6.907 |           1.036 | Windowless  |       0.0685 |       0.1249 |        0.122 | [-0.044, 2.151]    |
+| 60%       | 300 |          6.783 |            6.733 |           0.05  | Windowless  |       0.9119 |       0.808  |        0.006 | [-0.813, 0.910]    |
+| 75%       | 375 |         10.133 |            9.051 |           1.083 | Windowless  |       0.0386 |       0.0862 |        0.107 | [0.083, 2.107]     |
+
+### Learned-Regression Recovery
+
+#### Full Population
+
+All people in the evaluated graph.
+
+| Removed   |   N |   Windowed MAE |   Windowless MAE |   ΔMAE (W − WL) | Lower MAE   |   Paired t p |   Wilcoxon p |   Cohen's dz | 95% bootstrap CI   |
+|:----------|----:|---------------:|-----------------:|----------------:|:------------|-------------:|-------------:|-------------:|:-------------------|
+| 0%        | 500 |          0.929 |            0.865 |           0.064 | Windowless  |       0.1446 |       0.1437 |        0.065 | [-0.020, 0.146]    |
+| 15%       | 500 |          0.871 |            1.043 |          -0.172 | Windowed    |       0.0008 |       0.006  |       -0.15  | [-0.269, -0.071]   |
+| 30%       | 500 |          1.355 |            1.223 |           0.132 | Windowless  |       0.1083 |       0.3952 |        0.072 | [-0.028, 0.294]    |
+| 45%       | 500 |          1.603 |            1.811 |          -0.209 | Windowed    |       0.0558 |       0.8947 |       -0.086 | [-0.429, 0.000]    |
+| 60%       | 500 |          1.896 |            1.698 |           0.198 | Windowless  |       0.0519 |       0.0106 |        0.087 | [-0.008, 0.398]    |
+| 75%       | 500 |          1.736 |            1.79  |          -0.054 | Windowed    |       0.5746 |       0.4619 |       -0.025 | [-0.242, 0.140]    |
+
+#### Retained `hasAge` Relations
+
+Only people whose `hasAge` triple remains present in the evaluated run.
+
+| Removed   |   N |   Windowed MAE |   Windowless MAE |   ΔMAE (W − WL) | Lower MAE   | Paired t p   |   Wilcoxon p |   Cohen's dz | 95% bootstrap CI   |
+|:----------|----:|---------------:|-----------------:|----------------:|:------------|:-------------|-------------:|-------------:|:-------------------|
+| 0%        | 500 |          0.929 |            0.865 |           0.064 | Windowless  | 0.1446       |       0.1437 |        0.065 | [-0.020, 0.146]    |
+| 15%       | 425 |          0.696 |            0.829 |          -0.133 | Windowed    | 0.0007       |       0.0035 |       -0.165 | [-0.209, -0.057]   |
+| 30%       | 350 |          0.594 |            0.61  |          -0.016 | Windowed    | 0.6598       |       0.4011 |       -0.024 | [-0.087, 0.055]    |
+| 45%       | 275 |          0.341 |            0.287 |           0.053 | Windowless  | 0.0107       |       0.0228 |        0.155 | [0.013, 0.095]     |
+| 60%       | 200 |          0.076 |            0.056 |           0.02  | Windowless  | <0.0001      |       0.0003 |        0.291 | [0.010, 0.029]     |
+| 75%       | 125 |          0.023 |            0.019 |           0.004 | Windowless  | 0.0227       |       0.0677 |        0.206 | [0.001, 0.008]     |
+
+#### Removed `hasAge` Relations
+
+Only people whose `hasAge` triple was removed from the evaluated run.
+
+| Removed   |   N |   Windowed MAE |   Windowless MAE |   ΔMAE (W − WL) | Lower MAE   |   Paired t p |   Wilcoxon p |   Cohen's dz | 95% bootstrap CI   |
+|:----------|----:|---------------:|-----------------:|----------------:|:------------|-------------:|-------------:|-------------:|:-------------------|
+| 15%       |  75 |          1.863 |            2.255 |          -0.392 | Windowed    |       0.1334 |       0.2475 |       -0.175 | [-0.917, 0.119]    |
+| 30%       | 150 |          3.132 |            2.654 |           0.477 | Windowless  |       0.0668 |       0.0692 |        0.151 | [-0.026, 0.989]    |
+| 45%       | 225 |          3.145 |            3.674 |          -0.529 | Windowed    |       0.028  |       0.0476 |       -0.147 | [-0.996, -0.048]   |
+| 60%       | 300 |          3.11  |            2.793 |           0.317 | Windowless  |       0.062  |       0.0836 |        0.108 | [-0.007, 0.646]    |
+| 75%       | 375 |          2.307 |            2.38  |          -0.074 | Windowed    |       0.5673 |       0.536  |       -0.03  | [-0.325, 0.180]    |
+
+## Metric Notes
+
+- **AE:** absolute error, measured in years.
+- **MAE:** mean absolute error. Lower values indicate more accurate predictions.
+- **SD:** standard deviation of the absolute errors.
+- **N:** number of people or paired observations in the table row.
+- **Paired t p:** p-value from the paired t-test.
+- **Wilcoxon p:** p-value from the Wilcoxon signed-rank test.
+- **Cohen's dz:** standardized effect size for paired data.
+- **95% bootstrap CI:** bootstrap confidence interval for the mean paired difference.
+- **Top-1:** the nearest age entity selected by query-point recovery.
+
+## Nested Removal
+
+Removal sets are cumulative. If `R15` is the set of `hasAge` relations removed at 15%, then:
+
+```text
+R15 ⊆ R30 ⊆ R45 ⊆ R60 ⊆ R75
+```
+
+Equivalently, the complete triple sets of the evaluated graphs shrink in the opposite direction:
+
+```text
+KG0 ⊇ KG15 ⊇ KG30 ⊇ KG45 ⊇ KG60 ⊇ KG75
+```
