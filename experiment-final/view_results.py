@@ -17,6 +17,53 @@ WINDOW_LABELS = {
     "without_windows": "Without Windowing",
 }
 
+def write_comparison_csv(
+    comparison: pd.DataFrame,
+    output_csv: str | Path = Path("final_results") / "qp-lr-compare.csv",
+) -> None:
+    """Write the windowed and windowless results to one CSV file."""
+
+    results = comparison.copy()
+
+    window_order = {
+        "with_windows": 0,
+        "without_windows": 1,
+    }
+
+    results["_window_order"] = results["window_condition"].map(window_order)
+
+    results = results.sort_values(
+        ["_window_order", "population_size", "removal_percent"],
+        ascending=[True, False, True],
+    ).reset_index(drop=True)
+
+    csv_table = pd.DataFrame(
+        {
+            "Windowing": results["window_condition"].map(WINDOW_LABELS),
+            "Population Size": results["population_size"].astype(int),
+            "Removal %": results["removal_percent"].map(format_percent),
+            "QP MAE/SD (years)": [
+                f"{format_number(mae)}, {format_number(sd)}"
+                for mae, sd in zip(
+                    results["query_mae"],
+                    results["query_sd"],
+                )
+            ],
+            "Learned Regression MAE/SD (years)": [
+                f"{format_number(mae)}, {format_number(sd)}"
+                for mae, sd in zip(
+                    results["learning_mae"],
+                    results["learning_sd"],
+                )
+            ],
+        }
+    )
+
+    output_csv = Path(output_csv)
+    output_csv.parent.mkdir(parents=True, exist_ok=True)
+    csv_table.to_csv(output_csv, index=False)
+
+    print(f"Saved CSV report to: {output_csv}")
 
 def read_csv(path: Path) -> pd.DataFrame:
     """Read a non-empty CSV file."""
@@ -397,6 +444,8 @@ def generate_report(
 
     comparison = build_comparison(query, learning)
 
+    write_comparison_csv(comparison) 
+    
     output_md = Path(output_md)
     output_md.parent.mkdir(parents=True, exist_ok=True)
 
