@@ -1,74 +1,59 @@
 # Age-Node Embedding Monotonicity
 
-Spearman’s ρ and Kendall’s τb compare ground-truth age ordering with one-dimensional coordinates learned from age-node embeddings.
+Age-node embeddings are standardized once and projected into one shared PCA-2 space per run. PCA statistics use PC1. One regularized MLP maps normalized PC1 to the PCA-2 coordinates; each node's nearest position on that same fitted curve supplies the MLP coordinate used for Spearman and Kendall statistics. The exact same curve is drawn in the per-run visualizations.
 
-Neither PCA nor the MLP principal curve uses numeric age while fitting its one-dimensional coordinate. True ages are used only afterward to calculate rank correlations.
-
-PCA measures ordering along the dominant unsupervised linear direction. The MLP principal curve measures ordering along an unsupervised nonlinear one-dimensional curve initialized from PCA and refined through nearest-curve projection.
-
-One-dimensional coordinates have arbitrary direction. Their signs are therefore oriented toward increasing age before reporting the correlations.
-
-In the gap plots, the difference is `MLP correlation − PCA correlation`. Positive values indicate stronger MLP monotonicity; negative values indicate stronger PCA monotonicity.
+Ground-truth age is used only after fitting to orient each one-dimensional coordinate toward increasing age.
 
 ## With Windowing
 
-| Population Size | Removal % | PCA Spearman ρ | PCA Kendall τb | MLP Spearman ρ | MLP Kendall τb |
+| Population | Removal % | PCA Spearman ρ | PCA Kendall τb | MLP Spearman ρ | MLP Kendall τb |
 | --- | --- | --- | --- | --- | --- |
-| 500 | 0% | 0.9774 | 0.8788 | 0.9869 | 0.9016 |
-| 500 | 15% | 0.9847 | 0.9002 | 0.9811 | 0.8802 |
-| 500 | 30% | 0.9757 | 0.8784 | 0.9811 | 0.8870 |
-| 500 | 45% | 0.9769 | 0.8776 | 0.9733 | 0.8595 |
-| 500 | 60% | 0.9768 | 0.8844 | 0.9805 | 0.8805 |
-| 500 | 75% | 0.9570 | 0.8436 | 0.9827 | 0.8881 |
-| 200 | 0% | 0.9881 | 0.9156 | 0.9836 | 0.8904 |
-| 200 | 15% | 0.9884 | 0.9156 | 0.9804 | 0.8861 |
-| 200 | 30% | 0.9904 | 0.9180 | 0.9854 | 0.8952 |
-| 200 | 45% | 0.9861 | 0.9051 | 0.9605 | 0.8269 |
-| 200 | 60% | 0.9852 | 0.9046 | 0.9827 | 0.8919 |
-| 200 | 75% | 0.9909 | 0.9273 | 0.9866 | 0.9033 |
-| 100 | 0% | 0.9900 | 0.9224 | 0.9854 | 0.8980 |
-| 100 | 15% | 0.9936 | 0.9442 | 0.9886 | 0.9103 |
-| 100 | 30% | 0.9903 | 0.9196 | 0.9832 | 0.8957 |
-| 100 | 45% | 0.9909 | 0.9236 | 0.9879 | 0.9071 |
-| 100 | 60% | 0.9922 | 0.9277 | 0.9796 | 0.8813 |
-| 100 | 75% | 0.9922 | 0.9301 | 0.9833 | 0.8964 |
+| 500 | 0% | 0.9613 | 0.8473 | 0.9750 | 0.8683 |
+| 500 | 15% | 0.9748 | 0.8735 | 0.9819 | 0.8875 |
+| 500 | 30% | 0.9699 | 0.8594 | 0.9835 | 0.8941 |
+| 500 | 45% | 0.9639 | 0.8541 | 0.9795 | 0.8811 |
+| 500 | 60% | 0.9585 | 0.8436 | 0.9829 | 0.8948 |
+| 500 | 75% | 0.9428 | 0.8141 | 0.9853 | 0.9038 |
+| 200 | 0% | 0.9809 | 0.8954 | 0.9869 | 0.9099 |
+| 200 | 15% | 0.9805 | 0.8889 | 0.9835 | 0.8964 |
+| 200 | 30% | 0.9818 | 0.8893 | 0.9834 | 0.8917 |
+| 200 | 45% | 0.9716 | 0.8715 | 0.9853 | 0.8992 |
+| 200 | 60% | 0.9763 | 0.8857 | 0.9826 | 0.8911 |
+| 200 | 75% | 0.9872 | 0.9131 | 0.9826 | 0.8908 |
+| 100 | 0% | 0.9926 | 0.9313 | 0.9822 | 0.8877 |
+| 100 | 15% | 0.9945 | 0.9430 | 0.9814 | 0.8861 |
+| 100 | 30% | 0.9908 | 0.9208 | 0.9769 | 0.8719 |
+| 100 | 45% | 0.9909 | 0.9236 | 0.9825 | 0.8953 |
+| 100 | 60% | 0.9932 | 0.9333 | 0.9806 | 0.8798 |
+| 100 | 75% | 0.9925 | 0.9293 | 0.9738 | 0.8695 |
 
-### Monotonicity Across Removal Levels
+![Monotonicity](age-monotonicity-plots/with_windows_monotonicity.png)
 
-![With Windowing monotonicity](age-monotonicity-plots/with_windows_monotonicity.png)
-
-### Difference Between PCA and MLP
-
-![With Windowing PCA and MLP difference](age-monotonicity-plots/with_windows_pca_mlp_gap.png)
+![MLP minus PCA](age-monotonicity-plots/with_windows_gap.png)
 
 ## Without Windowing
 
-| Population Size | Removal % | PCA Spearman ρ | PCA Kendall τb | MLP Spearman ρ | MLP Kendall τb |
+| Population | Removal % | PCA Spearman ρ | PCA Kendall τb | MLP Spearman ρ | MLP Kendall τb |
 | --- | --- | --- | --- | --- | --- |
-| 500 | 0% | 0.9622 | 0.8469 | 0.9763 | 0.8766 |
-| 500 | 15% | 0.9766 | 0.8776 | 0.9810 | 0.8875 |
-| 500 | 30% | 0.9745 | 0.8735 | 0.9849 | 0.9005 |
-| 500 | 45% | 0.9618 | 0.8517 | 0.9764 | 0.8787 |
-| 500 | 60% | 0.9618 | 0.8497 | 0.9708 | 0.8585 |
-| 500 | 75% | 0.9606 | 0.8493 | 0.9405 | 0.8000 |
-| 200 | 0% | 0.9895 | 0.9200 | 0.9845 | 0.9005 |
-| 200 | 15% | 0.9911 | 0.9224 | 0.9858 | 0.9003 |
-| 200 | 30% | 0.9883 | 0.9051 | 0.9839 | 0.8933 |
-| 200 | 45% | 0.9830 | 0.8966 | 0.9741 | 0.8670 |
-| 200 | 60% | 0.9842 | 0.8990 | 0.9858 | 0.9003 |
-| 200 | 75% | 0.9822 | 0.9038 | 0.9879 | 0.9156 |
-| 100 | 0% | 0.9921 | 0.9281 | 0.9758 | 0.8711 |
-| 100 | 15% | 0.9922 | 0.9305 | 0.9813 | 0.8884 |
-| 100 | 30% | 0.9935 | 0.9362 | 0.9734 | 0.8602 |
-| 100 | 45% | 0.9928 | 0.9337 | 0.9829 | 0.8890 |
-| 100 | 60% | 0.9940 | 0.9398 | 0.9754 | 0.8611 |
-| 100 | 75% | 0.9938 | 0.9366 | 0.9831 | 0.8931 |
+| 500 | 0% | 0.9335 | 0.7984 | 0.9793 | 0.8836 |
+| 500 | 15% | 0.9600 | 0.8416 | 0.9724 | 0.8618 |
+| 500 | 30% | 0.9567 | 0.8416 | 0.9827 | 0.8983 |
+| 500 | 45% | 0.9122 | 0.7693 | 0.9846 | 0.9002 |
+| 500 | 60% | 0.9399 | 0.8048 | 0.9848 | 0.8999 |
+| 500 | 75% | 0.9170 | 0.7705 | 0.9762 | 0.8745 |
+| 200 | 0% | 0.9862 | 0.9095 | 0.9894 | 0.9175 |
+| 200 | 15% | 0.9844 | 0.8998 | 0.9895 | 0.9218 |
+| 200 | 30% | 0.9826 | 0.8881 | 0.9828 | 0.8922 |
+| 200 | 45% | 0.9777 | 0.8844 | 0.9827 | 0.8946 |
+| 200 | 60% | 0.9650 | 0.8513 | 0.9846 | 0.9000 |
+| 200 | 75% | 0.9656 | 0.8663 | 0.9842 | 0.8968 |
+| 100 | 0% | 0.9903 | 0.9220 | 0.9840 | 0.8953 |
+| 100 | 15% | 0.9897 | 0.9196 | 0.9863 | 0.9024 |
+| 100 | 30% | 0.9897 | 0.9164 | 0.9667 | 0.8475 |
+| 100 | 45% | 0.9915 | 0.9265 | 0.9755 | 0.8660 |
+| 100 | 60% | 0.9914 | 0.9269 | 0.9445 | 0.8035 |
+| 100 | 75% | 0.9928 | 0.9317 | 0.9844 | 0.8967 |
 
-### Monotonicity Across Removal Levels
+![Monotonicity](age-monotonicity-plots/without_windows_monotonicity.png)
 
-![Without Windowing monotonicity](age-monotonicity-plots/without_windows_monotonicity.png)
-
-### Difference Between PCA and MLP
-
-![Without Windowing PCA and MLP difference](age-monotonicity-plots/without_windows_pca_mlp_gap.png)
-
+![MLP minus PCA](age-monotonicity-plots/without_windows_gap.png)
