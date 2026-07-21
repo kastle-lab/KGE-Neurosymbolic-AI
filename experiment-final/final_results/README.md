@@ -12,14 +12,6 @@ This figure shows the principle component of the embeddings of the "age" nodes p
 
 ---
 
-# PC1
-
-Similar to the above but only the principle component is shown. Essentially, just collapsing the above image, flat into its principle component.
-
-
-
----
-
 ## MLP Curve fit to Principle Components 1 and 2
 
 ![PC1-PC2-MLP-curve](./age-node-mlp-curves/population_500_with_windows_removed_0p0pct.png)
