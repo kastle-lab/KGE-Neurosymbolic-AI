@@ -546,36 +546,6 @@ final_results/
 
 ---
 
-## Filename meanings
-
-Example:
-
-```text
-population_500_with_windows_removed_15p0pct.png
-```
-
-means:
-
-```text
-population_500  → experiment containing 500 people
-with_windows    → windowing condition
-removed_15p0pct → 15.0% of hasAge relations removed
-```
-
-The letter `p` replaces the decimal point in the filename:
-
-```text
-15p0pct → 15.0%
-12p5pct → 12.5%
-0p0pct  → 0.0%
-```
-
-This is only filename formatting.
-
-It does not indicate a different experimental condition.
-
----
-
 ## CSV columns
 
 The CSV contains one row per run.
