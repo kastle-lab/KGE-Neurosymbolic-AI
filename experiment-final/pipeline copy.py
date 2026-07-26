@@ -69,35 +69,10 @@ def safe_token(value: str) -> str:
 
 
 def get_removal_percentages(args) -> list[float]:
-    if args.removal_percentages is not None:
-        percentages = sorted(set(args.removal_percentages))
-
-        if not percentages:
-            raise ValueError(
-                "--removal-percentages must contain at least one percentage."
-            )
-
-        invalid = [
-            percentage
-            for percentage in percentages
-            if percentage <= 0 or percentage > 100
-        ]
-
-        if invalid:
-            raise ValueError(
-                "Removal percentages must be greater than 0 and at most 100. "
-                f"Invalid values: {invalid}"
-            )
-
-        return percentages
-
     if args.n_variations < 1:
         raise ValueError("--n-variations must be at least 1.")
-
     if args.removal_percent_step <= 0:
-        raise ValueError(
-            "--removal-percent-step must be greater than 0."
-        )
+        raise ValueError("--removal-percent-step must be greater than 0.")
 
     percentages = [
         args.removal_percent_step * index
@@ -106,8 +81,7 @@ def get_removal_percentages(args) -> list[float]:
 
     if percentages[-1] > 100:
         raise ValueError(
-            f"Largest removal percentage is "
-            f"{percentages[-1]:g}%, above 100%."
+            f"Largest removal percentage is {percentages[-1]:g}%, above 100%."
         )
 
     return percentages
@@ -171,8 +145,6 @@ def save_manifest(args, runs: Sequence[KGRun]) -> Path:
             {
                 "label": run.label,
                 "tsv_path": str(run.tsv_path.relative_to(basepath)),
-                "experiment": args.experiment_name,
-                "embedding_model": args.embedding_model,
                 "window_condition": run.window_condition,
                 "removal_percent": run.removal_percent,
                 "relation": run.relation,
@@ -604,8 +576,6 @@ def run_query_point_evaluations(args, runs):
         df["experiment"] = (
             args.experiment_name
         )
-        
-        df["embedding_model"] = args.embedding_model
 
         df["run"] = run.label
 
@@ -892,18 +862,6 @@ def build_parser() -> argparse.ArgumentParser:
         default="report",
     )
     parser.add_argument("--force", action="store_true")
-    
-    parser.add_argument(
-        "--removal-percentages",
-        type=float,
-        nargs="+",
-        default=None,
-        help=(
-            "Explicit removal percentages, such as "
-            "--removal-percentages 25 50 75 99. "
-            "The 0%% baseline is created automatically."
-        ),
-    )
 
     return parser
 
